@@ -3,13 +3,13 @@
  */
 package com.jdglazer.remote.dataflow;
 
-class DataThreadHandler implements Runnable {
+class DataSourceThreadHandler implements Runnable {
 	
 	private DataSource datasource;
 	
 	private boolean running = true;
 	
-	public DataThreadHandler( DataSource datasource ) {
+	public DataSourceThreadHandler( DataSource datasource ) {
 		this.datasource = datasource;
 	}
 	

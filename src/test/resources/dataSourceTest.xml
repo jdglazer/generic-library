@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- updates every 6 minutes -->
+<datasource name="test-data-source" updateInterval="765000">
+</datasource>

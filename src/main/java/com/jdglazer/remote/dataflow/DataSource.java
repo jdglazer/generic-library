@@ -10,7 +10,7 @@ public class DataSource {
 	
 	private AccessCredentials access;
 	
-	private DatasourceParserBase datasourceParser;
+	private DataSourceParserBase datasourceParser;
 	
 	public int getUpdateInterval() {
 		return updateInterval;
@@ -24,7 +24,7 @@ public class DataSource {
 		return access;
 	}
 	
-	public DatasourceParserBase getDatasourceParser() {
+	public DataSourceParserBase getDatasourceParser() {
 		return datasourceParser;
 	}
 	
@@ -44,7 +44,7 @@ public class DataSource {
 		this.access = access;
 	}
 	
-	public void getDatasourceParser( DatasourceParserBase datasourceParser ) {
+	public void getDatasourceParser( DataSourceParserBase datasourceParser ) {
 		this.datasourceParser = datasourceParser;
 	}
 	
