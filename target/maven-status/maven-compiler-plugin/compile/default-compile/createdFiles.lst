@@ -1,0 +1,8 @@
+com/jdglazer/utils/communicate/HttpRequest.class
+com/jdglazer/utils/communicate/HttpResponse.class
+com/jdglazer/communicate/HttpRequestManager.class
+com/jdglazer/parsers/xml/datasource/VerifyAgainstSchema.class
+com/jdglazer/utils/communicate/TypeConversion.class
+com/jdglazer/utils/communicate/XMLParser.class
+com/jdglazer/utils/communicate/HttpRequestParams.class
+com/jdglazer/parsers/xml/datasource/ParserSettings.class

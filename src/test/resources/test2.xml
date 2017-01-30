@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<user dm-repeat="4" dm-query-point='a'
+	  dm-query='q'
+	  dm-bind-str='s'
+	  dm-bind-array='v'
+	  dm-perm-key='k'>
+	<account dm-result-handler='_4'></account>
+	<name dm-result-handler='_1' dm-name='getme'></name>
+	<email>
+		<_li dm-result-handler='_2'></_li>
+		<_li dm-result-handler='_3'></_li>
+	</email>
+</user>
+

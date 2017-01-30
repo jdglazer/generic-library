@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.example.org/datasource/" targetNamespace="http://www.example.org/datasource/">
+    <element name="datasource" type="tns:datasource"></element>
+    <complexType name="datasource">
+    	<sequence>
+    		<element name="credentials" type="string" maxOccurs="1" minOccurs="0">
+    		</element>
+    	</sequence>
+    	<attribute name="protocol" type="string" use="optional"
+    		default="http">
+    	</attribute>
+    </complexType>
+</schema>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<datasource name="" updateInterval="1s|1m|1h|1d|...">
+	<access protocol="http|https|ssh|socket">
+		<address></address>
+		<user></user>
+		<password></password>
+		<ip></ip>
+		<port></port>
+		<key></key>
+	</access>
+	<parse class="">
+	</parse>
+</datasource>

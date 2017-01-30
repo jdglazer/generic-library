@@ -1,0 +1,9 @@
+/home/joshua/EclipsePrograms/generic-library/src/main/java/com/jdglazer/utils/communicate/HttpRequest.java
+/home/joshua/EclipsePrograms/generic-library/src/main/java/com/jdglazer/utils/communicate/XMLParser.java
+/home/joshua/EclipsePrograms/generic-library/src/main/java/com/jdglazer/communicate/HttpRequestManager.java
+/home/joshua/EclipsePrograms/generic-library/src/main/java/com/jdglazer/parsers/xml/datasource/package-info.java
+/home/joshua/EclipsePrograms/generic-library/src/main/java/com/jdglazer/parsers/xml/datasource/ParserSettings.java
+/home/joshua/EclipsePrograms/generic-library/src/main/java/com/jdglazer/utils/communicate/HttpResponse.java
+/home/joshua/EclipsePrograms/generic-library/src/main/java/com/jdglazer/parsers/xml/datasource/VerifyAgainstSchema.java
+/home/joshua/EclipsePrograms/generic-library/src/main/java/com/jdglazer/utils/communicate/TypeConversion.java
+/home/joshua/EclipsePrograms/generic-library/src/main/java/com/jdglazer/utils/communicate/HttpRequestParams.java
