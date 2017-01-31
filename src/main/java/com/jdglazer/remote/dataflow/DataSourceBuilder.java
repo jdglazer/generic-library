@@ -112,5 +112,12 @@ public class DataSourceBuilder extends XMLParser {
 		}
 		return true;
 	}
+	/**
+	 * 
+	 */
+	public AccessCredentials getAccessCredentials() {
+		AccessCredentials accessCredentials = new AccessCredentials();
+		return accessCredentials;		
+	}
 	
 }
