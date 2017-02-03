@@ -2,6 +2,14 @@
 <datasource name="" updateInterval="1s|1m|1h|1d|...">
 	<access protocol="http|https|ssh|socket">
 		<address></address>
+		<getlist>
+			<element>key:value</element>
+			<element>Key:value</element>
+		</getlist>
+		<postlist>
+			<element>key:value</element>
+			<element>Key:value</element>
+		</postlist>
 		<user></user>
 		<password></password>
 		<ip></ip>

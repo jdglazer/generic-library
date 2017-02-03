@@ -1,12 +1,17 @@
 package com.jdglazer.remote.dataflow;
 
-public class DataSource {
+import java.io.Serializable;
+
+import com.jdglazer.remote.dataflow.access.AccessCredentials;
+
+public class DataSource implements Serializable {
+
+	private static final long serialVersionUID = 1543980989675665607L;
+
 	//in milliseconds
 	private int updateInterval;
 	
 	private String name;
-	
-	private Protocol protocol;
 	
 	private AccessCredentials access;
 	
@@ -28,10 +33,6 @@ public class DataSource {
 		return datasourceParser;
 	}
 	
-	public Protocol getProtocol() {
-		return protocol;
-	}
-	
 	public void setUpdateInterval( int updateInterval) {
 		this.updateInterval = updateInterval;
 	}
@@ -46,10 +47,6 @@ public class DataSource {
 	
 	public void getDatasourceParser( DataSourceParserBase datasourceParser ) {
 		this.datasourceParser = datasourceParser;
-	}
-	
-	public void getProtocol( Protocol protocol ) {
-		this.protocol = protocol;
 	}
 	
 	public enum Protocol {

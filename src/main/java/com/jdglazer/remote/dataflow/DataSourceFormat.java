@@ -40,6 +40,12 @@ public class DataSourceFormat {
 	 * OPTIONAL
 	 */
 	public static final String WEB_ADDRESS_ELEMENT_NAME = "address";
+	
+	public static final String GET_LIST_ELEMENT_NAME = "getlist";
+	public static final String POST_LIST_ELEMENT_NAME = "postlist";
+	public static final String LIST_ELEMENT_ELEMENT_NAME = "element";
+	public static final String LIST_KEY_VALUE_DELIMITER = ":";
+	
 	/**
 	 * The name of the element containing the username needed for ssh or to verify user over https
 	 * OPTIONAL
@@ -83,6 +89,9 @@ public class DataSourceFormat {
 	 * The minimum length between updates from a data source ( in milliseconds)
 	 */
 	public static final int MINIMUM_ALLOWED_UPDATE_INTERVAL = 1000;
+	/**
+	 * The interval between updates assigned by default to a datasource
+	 */
 	public static final int DEFAULT_UPDATE_INTERVAL = 3600000;
 
 }
