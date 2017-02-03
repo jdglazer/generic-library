@@ -2,6 +2,7 @@ package com.jdglazer.remote.dataflow.test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -19,11 +20,11 @@ public class DataSourceBuilderTest {
 		
 		long time = System.currentTimeMillis();
 		DataSourceBuilder dsb = new DataSourceBuilder( new File("C:\\Users\\rglazer\\git\\generic-library\\src\\test\\resources\\dataSourceTest.xml") );
-		DataSource ds = dsb.build();
+		Map<String, DataSource> ds = dsb.build();
 		
-		System.out.println( "Time: "+(System.currentTimeMillis() - time)+", Name: "+ds.getName()+", Update Interval: "+ds.getUpdateInterval() );
+		System.out.println( "Time: "+(System.currentTimeMillis() - time)+", Name: "+ds.get("test-source").getName()+", Update Interval: "+ds.get("test-source").getUpdateInterval() );
 		//System.out.println( ( (HTTPAccess) ds.getAccess() ).getAddress()+", "+( (HTTPAccess) ds.getAccess() ).getGetVars().size()+", "+( (HTTPAccess) ds.getAccess() ).getPostVars().get("usrname") ); 
-		System.out.println( ds.getAccess().getProtocol() );
+		System.out.println( ds.get("test-source").getAccess().getProtocol() );
 		
 	}
 }

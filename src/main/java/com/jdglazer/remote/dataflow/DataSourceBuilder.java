@@ -6,6 +6,7 @@ package com.jdglazer.remote.dataflow;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +37,9 @@ public class DataSourceBuilder extends XMLParser {
 	private File datasource;
 	
 	/**
-	 * The DataSource object populated by data parsed out of xml
+	 * The DataSource map stored with data source name
 	 */
-	private DataSource parsedOutDataSource;	
+	private Map<String, DataSource> parsedOutDataSources;	
 	
 	
 	/**
@@ -52,141 +53,141 @@ public class DataSourceBuilder extends XMLParser {
 		super();
 		parseFile( datasource );
 		this.datasource = datasource;
-		parsedOutDataSource = new DataSource();
+		parsedOutDataSources=new HashMap<String, DataSource>();
 	}
 	
 	/**
 	 * Parses datasource xml file and builds a DataSource object from it
 	 * @return DataSource object based on information in datasource file
 	 */
-	public DataSource build() {
-		parsedOutDataSource = new DataSource();
-		if( getRootData() ) {
-			AccessCredentials accessCredentials = getAccessCredentials();
-			if ( accessCredentials != null ) {
-				parsedOutDataSource.setAccess(accessCredentials);
-			} else {
-				System.out.println( "Failed to produce access credentials");
-			}
+	public Map<String, DataSource> build() {
+		if( getData() ) {
+			System.out.println("succeeded");
 		};
 		
 		
-		return parsedOutDataSource;
+		return parsedOutDataSources;
 	}
 	
 	/**
 	 * Pull data from the root element of the data source xml
-	 * 
 	 * @return true if the root data source element was found with a non-null name attribute value and an update interval value
 	 */
-	private boolean getRootData() {
+	private boolean getData() {
 		
 		List<Node> list = this.getTagsByName(DataSourceFormat.ROOT_ELEMENT_NAME);
+		boolean foundDataSources = false;
 		
 		if( list.size() > 0 ) {
-			Node root = list.get(0);
-			NamedNodeMap nm = root.getAttributes();
-			if( nm != null ) {
-				Node name = nm.getNamedItem(DataSourceFormat.DATA_SOURCE_NAME_ATTR),
-					 updateInterval = nm.getNamedItem(DataSourceFormat.DATA_SOURCE_UPDATE_INTERVAL_ATTR);
-				if( name != null && updateInterval != null ) {
-					
-					String datasource_name = name.getTextContent().trim();
-					int datasource_ui = 0;
-					try {
-						datasource_ui = Integer.parseInt( updateInterval.getTextContent() );
+			for( Node root : list ) {
+				NamedNodeMap nm = root.getAttributes();
+				if( nm != null ) {
+					Node name = nm.getNamedItem(DataSourceFormat.DATA_SOURCE_NAME_ATTR),
+						 updateInterval = nm.getNamedItem(DataSourceFormat.DATA_SOURCE_UPDATE_INTERVAL_ATTR);
+					if( name != null && updateInterval != null ) {
+						
+						String datasource_name = name.getTextContent().trim();
+						DataSource dataSource = new DataSource();
+						int datasource_ui = 0;
+						try {
+							datasource_ui = Integer.parseInt( updateInterval.getTextContent() );
+						}
+						catch ( Exception e ) {
+							logger.debug("Invalid string found for updateInterval in "+datasource);
+						}
+						
+						if( datasource_name.length() > 0 )
+							dataSource.setName( datasource_name );
+						else {
+							logger.debug("Null data source name is not allowed. File: "+datasource );
+							dataSource = null;
+							continue;
+						}
+						
+						dataSource.setUpdateInterval(
+						  datasource_ui >= DataSourceFormat.MINIMUM_ALLOWED_UPDATE_INTERVAL
+							? datasource_ui
+							: DataSourceFormat.DEFAULT_UPDATE_INTERVAL
+						);
+						
+						AccessCredentials accessCredentials = getAccessCredentials( root );
+						if( accessCredentials == null ) {
+							logger.debug( "Invalid access credentials detected for data source of name: "+name+"in files: "+datasource);
+							continue;
+						}
+						dataSource.setAccess( accessCredentials );
+						parsedOutDataSources.put( datasource_name, dataSource );
+						foundDataSources = true;
 					}
-					catch ( Exception e ) {
-						logger.debug("Invalid string found for updateInterval in "+datasource);
-					}
-					
-					if( datasource_name.length() > 0 )
-						parsedOutDataSource.setName( datasource_name );
 					else {
-						logger.debug("Null data source name is not allowed. File: "+datasource );
-						return false;
+						logger.debug("Must set both name and update interval in root datesource tag. File: "+datasource);
+						continue;
 					}
-					parsedOutDataSource.setUpdateInterval(
-					  datasource_ui >= DataSourceFormat.MINIMUM_ALLOWED_UPDATE_INTERVAL
-						? datasource_ui
-						: DataSourceFormat.DEFAULT_UPDATE_INTERVAL
-					);
 				}
 				else {
-					logger.debug("Must set both name and update interval in root datesource tag. File: "+datasource);
-					return false;
+					logger.debug("Data source defined at "+datasource+" has no attributes.");
+					continue;
 				}
-			}
-			else {
-				logger.debug("Data source defined at "+datasource+" has no attributes.");
-				return false;
 			}
 		} else {
 			logger.debug("No data source root element found in "+datasource);
 			return false;
 		}
-		return true;
+		return foundDataSources;
 	}
+	
 	/**
 	 * 
 	 */
-	public AccessCredentials getAccessCredentials() {
+	public AccessCredentials getAccessCredentials( Node dataSource ) {
 		AccessCredentials accessCredentials = null;
 		
-		List<Node> credentials = getTagsByName( DataSourceFormat.CREDENTIAL_PROVIDER_NAME );
+		NodeList DsChilds = dataSource.getChildNodes();
+		Node access = null;
 		
-		if( credentials.size() > 0 ) {
-			
-			boolean found = false;
-			
-			for( int i = 0; i < credentials.size() && !found; i++ ) {
-				Node access = credentials.get(i);
-				Node parent = access.getParentNode();
-				if( parent == null )
-					continue;
-				else {
-					if( !parent.getNodeName().equals( DataSourceFormat.ROOT_ELEMENT_NAME ) )
-						continue;
-				}
-				found = true;
-				NamedNodeMap nm = access.getAttributes();
-				if( nm != null ) {
-					Node protocolAttr = nm.getNamedItem( DataSourceFormat.ACCESS_PROTOCOL_ATTR );
-					
-					if( protocolAttr != null ) {
-						
-						String protocolStr = protocolAttr.getTextContent().trim().toLowerCase();
-						
-						try {
-							DataSource.Protocol protocol = DataSource.Protocol.valueOf( protocolStr );
-							
-							switch( protocol ) {
-							case http:
-								accessCredentials = new HTTPAccess();
-								populateHttpAccess( access, (HTTPAccess) accessCredentials );
-								break;
-							case https:
-								accessCredentials = new HTTPSAccess();
-								populateHttpAccess( access, (HTTPSAccess) accessCredentials );
-								break;
-							case ssh:
-								accessCredentials = new SSHAccess();
-								populateSshAccess( access, (SSHAccess) accessCredentials );
-								break;
-							case socket:
-								accessCredentials = new SocketAccess();
-								populateSocketAccess( access, (SocketAccess) accessCredentials );
-								break;
-							}
-						} catch ( Exception e ) {
-							logger.debug( "Invalid protocol provided to data source access in file: "+datasource );
-						}
-					} else {
-						logger.debug( "No protocol registered with data source access crednetials in file "+datasource);
-						return null;
-					}
+		for( int j = 0; j < DsChilds.getLength(); j++ ) {
+			access = DsChilds.item(j);
+			if( access.getNodeType() == Node.ELEMENT_NODE ) {
+				if( access.getNodeName().toLowerCase().equals(DataSourceFormat.CREDENTIAL_PROVIDER_NAME) ) {
+					break;
 				}
 			}
+		}
+		if( access != null ) {
+			NamedNodeMap nm = access.getAttributes();
+			if( nm != null ) {
+				Node protocolAttr = nm.getNamedItem( DataSourceFormat.ACCESS_PROTOCOL_ATTR );
+				if( protocolAttr != null ) {
+					String protocolStr = protocolAttr.getTextContent().trim().toLowerCase();	
+					try {
+						DataSource.Protocol protocol = DataSource.Protocol.valueOf( protocolStr );
+						switch( protocol ) {
+						case http:
+							accessCredentials = new HTTPAccess();
+							populateHttpAccess( access, (HTTPAccess) accessCredentials );
+							break;
+						case https:
+							accessCredentials = new HTTPSAccess();
+							populateHttpAccess( access, (HTTPSAccess) accessCredentials );
+							break;
+						case ssh:
+							accessCredentials = new SSHAccess();
+							populateSshAccess( access, (SSHAccess) accessCredentials );
+							break;
+						case socket:
+							accessCredentials = new SocketAccess();
+							populateSocketAccess( access, (SocketAccess) accessCredentials );
+							break;
+						}
+					} catch ( Exception e ) {
+						logger.debug( "Invalid protocol provided to data source access in file: "+datasource );
+					}
+				} else {
+					logger.debug( "No protocol registered with data source access credentials in file "+datasource);
+					return null;
+				}
+			}
+
 		} else {
 			logger.debug("No access credentials found for datasource in file "+datasource);
 			return null;

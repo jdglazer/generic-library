@@ -9,14 +9,18 @@ class DataSourceThreadHandler implements Runnable {
 	
 	private boolean running = true;
 	
+	private boolean parseInProgress = false;
+	
 	public DataSourceThreadHandler( DataSource datasource ) {
 		this.datasource = datasource;
 	}
 	
 	public void run() {
 		while( running ) {
+			parseInProgress = true;
 			//Code to perform data collection
 			try {
+				parseInProgress = false;
 				Thread.sleep( (long) datasource.getUpdateInterval() );
 			} catch (InterruptedException e) {
 				//log thread error
@@ -31,5 +35,9 @@ class DataSourceThreadHandler implements Runnable {
 	
 	public void stopCollecting() {
 		running = false;
+	}
+	
+	public boolean parseInProgress() {
+		return parseInProgress;
 	}
 }
