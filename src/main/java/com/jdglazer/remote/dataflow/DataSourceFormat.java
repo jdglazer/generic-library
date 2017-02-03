@@ -35,15 +35,31 @@ public class DataSourceFormat {
 	 * DEFAULT: http
 	 */
 	public static final String ACCESS_PROTOCOL_ATTR = "protocol";
+	
 	/**
 	 * The name of the element containing the web address of the datasource
 	 * OPTIONAL
 	 */
 	public static final String WEB_ADDRESS_ELEMENT_NAME = "address";
 	
+	/**
+	 * Name of the root element for a list of get variables in an http(s) request
+	 */
 	public static final String GET_LIST_ELEMENT_NAME = "getlist";
+	
+	/**
+	 * Name the root element encasing a list of post variables for an http(s) request
+	 */
 	public static final String POST_LIST_ELEMENT_NAME = "postlist";
+	
+	/**
+	 * Name of an element holding a key value pair in a list
+	 */
 	public static final String LIST_ELEMENT_ELEMENT_NAME = "element";
+	
+	/**
+	 * The character chosen to separate a key from its associated value in a list
+	 */
 	public static final String LIST_KEY_VALUE_DELIMITER = ":";
 	
 	/**
@@ -51,26 +67,31 @@ public class DataSourceFormat {
 	 * OPTIONAL
 	 */
 	public static final String USER_ELEMENT_NAME = "user";
+	
 	/**
 	 * The name of the element containing ssh or web password needed
 	 * OPTIONAL
 	 */
 	public static final String PASSWORD_ELEMENT_NAME = "password";
+	
 	/**
 	 * The name of the element containing the ip address for ssh or socket connections
 	 * OPTIONAL
 	 */
 	public static final String IP_ELEMENT_NAME ="ip";
+	
 	/**
 	 * The name of the element containing the port needed for socket connections
 	 * OPTIONAL
 	 */
 	public static final String PORT_ELEMENT_NAME = "port";
+	
 	/**
 	 * The name of the element containing the encryption key for socket connections
 	 * OPTIONAL
 	 */
 	public static final String KEY_ELEMENT_NAME = "key";
+	
 	/**
 	 * The name of the element that provides a class to parse out raw data from the input source
 	 * OPTIONAL
@@ -89,6 +110,7 @@ public class DataSourceFormat {
 	 * The minimum length between updates from a data source ( in milliseconds)
 	 */
 	public static final int MINIMUM_ALLOWED_UPDATE_INTERVAL = 1000;
+	
 	/**
 	 * The interval between updates assigned by default to a datasource
 	 */

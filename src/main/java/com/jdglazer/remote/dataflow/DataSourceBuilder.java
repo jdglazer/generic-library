@@ -61,8 +61,15 @@ public class DataSourceBuilder extends XMLParser {
 	 */
 	public DataSource build() {
 		parsedOutDataSource = new DataSource();
+		if( getRootData() ) {
+			AccessCredentials accessCredentials = getAccessCredentials();
+			if ( accessCredentials != null ) {
+				parsedOutDataSource.setAccess(accessCredentials);
+			} else {
+				System.out.println( "Failed to produce access credentials");
+			}
+		};
 		
-		System.out.println( getRootData() );
 		
 		return parsedOutDataSource;
 	}
@@ -150,25 +157,29 @@ public class DataSourceBuilder extends XMLParser {
 						
 						String protocolStr = protocolAttr.getTextContent().trim().toLowerCase();
 						
-						DataSource.Protocol protocol = DataSource.Protocol.valueOf( protocolStr );
-						
-						switch( protocol ) {
-						case http:
-							accessCredentials = new HTTPAccess();
-							populateHttpAccess( access, (HTTPAccess) accessCredentials );
-							break;
-						case https:
-							accessCredentials = new HTTPSAccess();
-							populateHttpAccess( access, (HTTPSAccess) accessCredentials );
-							break;
-						case ssh:
-							accessCredentials = new SSHAccess();
-							populateSshAccess( access, (SSHAccess) accessCredentials );
-							break;
-						case socket:
-							accessCredentials = new SocketAccess();
-							populateSocketAccess( access, (SocketAccess) accessCredentials );
-							break;
+						try {
+							DataSource.Protocol protocol = DataSource.Protocol.valueOf( protocolStr );
+							
+							switch( protocol ) {
+							case http:
+								accessCredentials = new HTTPAccess();
+								populateHttpAccess( access, (HTTPAccess) accessCredentials );
+								break;
+							case https:
+								accessCredentials = new HTTPSAccess();
+								populateHttpAccess( access, (HTTPSAccess) accessCredentials );
+								break;
+							case ssh:
+								accessCredentials = new SSHAccess();
+								populateSshAccess( access, (SSHAccess) accessCredentials );
+								break;
+							case socket:
+								accessCredentials = new SocketAccess();
+								populateSocketAccess( access, (SocketAccess) accessCredentials );
+								break;
+							}
+						} catch ( Exception e ) {
+							logger.debug( "Invalid protocol provided to data source access in file: "+datasource );
 						}
 					} else {
 						logger.debug( "No protocol registered with data source access crednetials in file "+datasource);
