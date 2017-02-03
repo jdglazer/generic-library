@@ -5,7 +5,7 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jdglazer.utils.communicate.HttpRequest;
+import com.jdglazer.utils.communicate.http.HttpRequest;
 
 public class HttpRequestManager implements Runnable {
 	

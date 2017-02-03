@@ -11,7 +11,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import com.jdglazer.utils.communicate.XMLParser;
+import com.jdglazer.utils.xml.XMLParser;
 
 public class XmlParse extends XMLParser {
 	

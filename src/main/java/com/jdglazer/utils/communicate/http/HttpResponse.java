@@ -1,4 +1,4 @@
-package com.jdglazer.utils.communicate;
+package com.jdglazer.utils.communicate.http;
 
 import java.io.File;
 

@@ -24,7 +24,7 @@ import com.jdglazer.remote.dataflow.access.HTTPAccess;
 import com.jdglazer.remote.dataflow.access.HTTPSAccess;
 import com.jdglazer.remote.dataflow.access.SSHAccess;
 import com.jdglazer.remote.dataflow.access.SocketAccess;
-import com.jdglazer.utils.communicate.XMLParser;
+import com.jdglazer.utils.xml.XMLParser;
 
 public class DataSourceBuilder extends XMLParser {
 	

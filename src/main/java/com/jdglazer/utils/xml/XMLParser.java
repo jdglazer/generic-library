@@ -1,4 +1,4 @@
-package com.jdglazer.utils.communicate;
+package com.jdglazer.utils.xml;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
