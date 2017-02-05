@@ -6,6 +6,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -50,6 +51,19 @@ public abstract class XMLParser {
 		}
 		NodeList nodeList = document.getElementsByTagName(name);
 		return nodeListToList( nodeList );
+	}
+	
+	protected static List<Node> getTagsByName( Node parent, String name ) {
+		List<Node> childs = new ArrayList<Node>();
+		NodeList nl = parent.getChildNodes();
+		for( int i = 0; i < nl.getLength(); i++ ) {
+			Node n = nl.item(i);
+			if( n instanceof Element && n.getNodeName().equals(name) ) {
+				childs.add( n );
+			}
+		}
+		return childs;
+		
 	}
 	
 	protected List<Node> getTagsByAttributeValue( String attribute, String value ) {

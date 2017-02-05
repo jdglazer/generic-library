@@ -2,7 +2,7 @@
 <!-- updates every 6 minutes -->
 <datasource name="test-source" updateInterval="765000">
 	<access protocol="socket">
-		<address>993</address>
+		<port>993</port>
 		<ip>10.10.15.242</ip>
 		<getlist>
 			<element>passwd:jr53gt43#</element>

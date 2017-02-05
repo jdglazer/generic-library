@@ -15,6 +15,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -142,17 +143,9 @@ public class DataSourceBuilder extends XMLParser {
 	public AccessCredentials getAccessCredentials( Node dataSource ) {
 		AccessCredentials accessCredentials = null;
 		
-		NodeList DsChilds = dataSource.getChildNodes();
-		Node access = null;
+		List<Node> nl = getTagsByName( dataSource,  DataSourceFormat.CREDENTIAL_PROVIDER_NAME );
+		Node access = nl.size() > 0 ? nl.get(0) : null;
 		
-		for( int j = 0; j < DsChilds.getLength(); j++ ) {
-			access = DsChilds.item(j);
-			if( access.getNodeType() == Node.ELEMENT_NODE ) {
-				if( access.getNodeName().toLowerCase().equals(DataSourceFormat.CREDENTIAL_PROVIDER_NAME) ) {
-					break;
-				}
-			}
-		}
 		if( access != null ) {
 			NamedNodeMap nm = access.getAttributes();
 			if( nm != null ) {
@@ -197,118 +190,96 @@ public class DataSourceBuilder extends XMLParser {
 	}
 	
 	private boolean populateHttpAccess( Node accessNode, HTTPAccess obj ) {
+		String address = null;
+		Map<String, String> getList = null, postList = null;
 		if ( accessNode != null ) {
-			NodeList nl = accessNode.getChildNodes();
-			//true when fields are found
-			boolean address = false, getList = false, postList = false;
-			for( int i = 0; i < nl.getLength(); i++ ) {
-				Node n = nl.item(i);
-				if( n.getNodeType() == Node.ELEMENT_NODE ) {
-					String nodeName = n.getNodeName();
-					if( nodeName.equals( DataSourceFormat.WEB_ADDRESS_ELEMENT_NAME) ) {
-						address = true;
-						obj.setAddress( n.getTextContent().trim() );
-					}
-					else if( nodeName.equals( DataSourceFormat.GET_LIST_ELEMENT_NAME) ) {
-						getList = true;
-						obj.setGetVars( parseVarList( n ) );
-					}
-					else if( nodeName.equals( DataSourceFormat.POST_LIST_ELEMENT_NAME) ) {
-						postList = true;
-						obj.setPostVars( parseVarList( n ) );
-					}
-				}
-				if( address && getList && postList  )
-					return true;
-			}
+			List<Node> list = getTagsByName( accessNode, DataSourceFormat.WEB_ADDRESS_ELEMENT_NAME );
+			address = list.size() > 0 ? list.get(0).getTextContent().trim() : null;
+			list = getTagsByName( accessNode, DataSourceFormat.GET_LIST_ELEMENT_NAME );
+			getList = list.size() > 0 ? parseVarList( list.get(0) ) : null;
+			list = getTagsByName( accessNode, DataSourceFormat.POST_LIST_ELEMENT_NAME );
+			postList = list.size() > 0 ? parseVarList( list.get(0) ) : null;
 		} else {
-			logger.debug( "Null datasource xml http(s) access node cannot be parsed");
+			logger.error( "Null datasource xml http(s) access node cannot be parsed");
 		}
-		return false;
+		
+		if( obj != null) {
+			obj.setAddress(address);
+			obj.setGetVars(getList);
+			obj.setPostVars(postList);
+		}
+		else {
+			logger.error( "Values cannot be set for null HTTPAccess object" );
+		}
+		
+		return (address != null && getList != null && postList != null);
 	}
 	
 	private boolean populateSshAccess( Node accessNode, SSHAccess access ) {
+		String user = null, ip = null, password = null;
 		if( accessNode != null ) {
-			NodeList nl = accessNode.getChildNodes();
 			//true when elements are found
-			boolean user = false, ip = false, password = false;
-			for( int i = 0; i < nl.getLength(); i++ ) {
-				Node n = nl.item(i);
-				if( n.getNodeType() == Node.ELEMENT_NODE ) {
-					String nodeName = n.getNodeName();
-					if( nodeName.equals( DataSourceFormat.IP_ELEMENT_NAME ) ) {
-						ip = true;
-						access.setIp( n.getTextContent().trim() );
-					}
-					else if ( nodeName.equals( DataSourceFormat.PASSWORD_ELEMENT_NAME ) ) {
-						password = true;
-						access.setPassword( n.getTextContent().trim() );
-					}
-					else if ( nodeName.equals( DataSourceFormat.USER_ELEMENT_NAME ) ) {
-						user = true;
-						access.setUser( n.getTextContent().trim() );
-					}
-				}
-				
-				if( user && password && ip )
-					return true;
-			}
+			List<Node> list = getTagsByName( DataSourceFormat.IP_ELEMENT_NAME );
+			ip = list.size() > 0 ? list.get(0).getTextContent().trim() : null;
+			list = getTagsByName( DataSourceFormat.PASSWORD_ELEMENT_NAME );
+			password = list.size() > 0 ? list.get(0).getTextContent().trim() : null;
+			list = getTagsByName( DataSourceFormat.USER_ELEMENT_NAME );
+			user = list.size() > 0 ? list.get(0).getTextContent().trim() : null;
 		} else {
-			logger.debug( "Null datasource xml ssh access node cannot be parsed");
+			logger.error( "Null datasource xml ssh access node cannot be parsed");
 		}
-		return false;
+		
+		if( access != null ) {
+			access.setIp(ip);
+			access.setPassword(password);
+			access.setUser(user);
+		} else {
+			logger.error( "Values can not be set for null SSHAccess object");
+		}
+		
+		return (user != null && ip != null && password != null);
 	}
 	
 	private boolean populateSocketAccess( Node accessNode, SocketAccess access ) {
-		if(accessNode != null ) {
-			NodeList nl = accessNode.getChildNodes();
-			//true when elements are found
-			boolean port = false, ip = false;
-			for( int i = 0; i < nl.getLength(); i++ ) {
-				Node n = nl.item(i);
-				if( n.getNodeType() == Node.ELEMENT_NODE ) {
-					String nodeName = n.getNodeName();
-					if( nodeName.equals( DataSourceFormat.IP_ELEMENT_NAME ) ) {
-						ip = true;
-						access.setIp( n.getTextContent().trim() );
-					}
-					else if ( nodeName.equals( DataSourceFormat.PORT_ELEMENT_NAME ) ) {
-						try {
-							access.setPort( Short.parseShort( n.getTextContent().trim() ) );
-							port = true;
-						} catch( Exception e) {
-							
-						}
-					}
-				}
-				
-				if( port && ip )
-					return true;
+		short port = -1;
+		String ip = null;
+		
+		if(accessNode != null ) {			
+			List<Node> list = getTagsByName(accessNode, DataSourceFormat.IP_ELEMENT_NAME );
+			ip = list.size() > 0 ? list.get(0).getTextContent().trim() : null;
+			list = getTagsByName(accessNode, DataSourceFormat.PORT_ELEMENT_NAME );
+			try {
+				port = list.size() > 0 ? Short.parseShort( list.get(0).getTextContent().trim() ) : -1;
+			} catch( Exception e ) {
+				logger.error( "Invalid format provided for port element ");
 			}
+
 		} else {
 			logger.debug("Null datasource xml socket access node cannot be parsed");
 		}
-		return false;
+		
+		if( access != null ) {
+			access.setIp(ip);
+			access.setPort(port);
+		} else {
+			logger.error( "Values can not be set for a null SocketAccess object");
+		}
+		return ( port > 0 && ip != null );
 	}
 	
 	private Map<String, String> parseVarList( Node listRoot ) {
 		Map<String, String> varMap = new HashMap<String,String>();
-		if( listRoot != null ) {
-			NodeList nl = listRoot.getChildNodes();
-			for( int i = 0; i < nl.getLength(); i++ ) {
-				Node n = nl.item(i);
-				if( n.getNodeType() == Node.ELEMENT_NODE ) {
-					if( n.getNodeName().equals( DataSourceFormat.LIST_ELEMENT_ELEMENT_NAME ) ) {
-						String [] keyValuePair = n.getTextContent().split( DataSourceFormat.LIST_KEY_VALUE_DELIMITER );
-						if( keyValuePair.length == 2 ) {
-							varMap.put( keyValuePair[0].trim(), keyValuePair[1].trim() );
-						}
-					} 
-				}
+		List<Node> nodeList = getTagsByName( listRoot, DataSourceFormat.LIST_ELEMENT_ELEMENT_NAME );
+		
+		for( Node n : nodeList ) {
+			String [] keyValuePair = n.getTextContent().split( DataSourceFormat.LIST_KEY_VALUE_DELIMITER );
+			if( keyValuePair.length == 2 ) {
+				varMap.put( keyValuePair[0].trim(), keyValuePair[1].trim() );
 			}
 		}
-		
 		return varMap;
 	}
+	
+	
 	
 }
