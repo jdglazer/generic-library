@@ -6,7 +6,6 @@ package com.jdglazer.remote.dataflow;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,10 +14,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.jdglazer.remote.dataflow.access.AccessCredentials;
@@ -26,6 +23,10 @@ import com.jdglazer.remote.dataflow.access.HTTPAccess;
 import com.jdglazer.remote.dataflow.access.HTTPSAccess;
 import com.jdglazer.remote.dataflow.access.SSHAccess;
 import com.jdglazer.remote.dataflow.access.SocketAccess;
+import com.jdglazer.remote.dataflow.parsers.BashParserModel;
+import com.jdglazer.remote.dataflow.parsers.JavaParserModel;
+import com.jdglazer.remote.dataflow.parsers.ParserModelBase;
+import com.jdglazer.remote.dataflow.parsers.ParserModelBase.Language;
 import com.jdglazer.utils.xml.XMLParser;
 
 public class DataSourceBuilder extends XMLParser {
@@ -63,10 +64,8 @@ public class DataSourceBuilder extends XMLParser {
 	 */
 	public Map<String, DataSource> build() {
 		if( getData() ) {
-			System.out.println("succeeded");
+			System.out.println("DataSource build of "+datasource+" succeeded!");
 		};
-		
-		
 		return parsedOutDataSources;
 	}
 	
@@ -113,9 +112,16 @@ public class DataSourceBuilder extends XMLParser {
 						
 						AccessCredentials accessCredentials = getAccessCredentials( root );
 						if( accessCredentials == null ) {
-							logger.debug( "Invalid access credentials detected for data source of name: "+name+"in files: "+datasource);
+							logger.debug( "Invalid access credentials detected for data source of name: "+name+" in file: "+datasource);
 							continue;
 						}
+						
+						ParserModelBase parser = getParser( root );
+						if( parser == null ) {
+							logger.debug( "Invalid parser detected for data source of name "+name+" in file: "+datasource);
+							continue;
+						}
+						dataSource.setDatasourceParser( parser );
 						dataSource.setAccess( accessCredentials );
 						parsedOutDataSources.put( datasource_name, dataSource );
 						foundDataSources = true;
@@ -140,7 +146,7 @@ public class DataSourceBuilder extends XMLParser {
 	/**
 	 * 
 	 */
-	public AccessCredentials getAccessCredentials( Node dataSource ) {
+	private AccessCredentials getAccessCredentials( Node dataSource ) {
 		AccessCredentials accessCredentials = null;
 		
 		List<Node> nl = getTagsByName( dataSource,  DataSourceFormat.CREDENTIAL_PROVIDER_NAME );
@@ -187,6 +193,75 @@ public class DataSourceBuilder extends XMLParser {
 		}
 		
 		return accessCredentials;		
+	}
+	
+	private ParserModelBase getParser( Node datasource ) {
+		ParserModelBase parserModel = null;
+		List<Node> nl = getTagsByName( datasource, DataSourceFormat.PARSER_CLASS_ELEMENT_NAME );
+		if( nl.size() > 0 ) {
+			Node parserNode = nl.get(0);
+			NamedNodeMap nm = parserNode.getAttributes();
+			Node attr = nm.getNamedItem( DataSourceFormat.PARSER_LANG_ATTR_NAME );
+			if( attr != null ) {
+				String parserLanguage = attr.getTextContent().trim().toLowerCase();
+				try {
+					Language language = Language.valueOf(parserLanguage);
+					switch( language ) {
+					case java:
+						parserModel = new JavaParserModel();
+						parserModel.setLanguage(language);
+						populateJavaParserModel(parserNode, (JavaParserModel) parserModel);
+						break;
+					case bash:
+						parserModel = new BashParserModel();
+						parserModel.setLanguage(language);
+						populateBashParserModel( parserNode, (BashParserModel) parserModel );
+						break;
+					}
+					
+				} catch( Exception e ) {
+					logger.error("Invalid language set for parser");
+				}
+			} else {
+				logger.error( "No language set for parser in "+datasource );
+			}
+		} else {
+			logger.error( "No parsers found for datasource in "+datasource );
+		}
+		return parserModel;
+	}
+	
+	private boolean populateJavaParserModel( Node parser, JavaParserModel jpm ) {
+		List<Node> list = getTagsByName( parser, DataSourceFormat.JAVA_PARSER_CLASS_ELEMENT_NAME );
+		if( list.size() > 0 ) {
+			Node classTag = list.get(0);
+			jpm.setParserFilePath( classTag.getTextContent().trim() ); 
+		} else {
+			logger.error("No class found for java parser");
+			return false;
+		}
+		
+		return true;
+	}
+	
+	private boolean populateBashParserModel( Node parser, BashParserModel bpm ) {
+		List<Node> list = getTagsByName( parser, DataSourceFormat.PARSER_SCRIPT_ELEMENT_NAME);
+		Node script = null;
+		String path = null, datapath = null;
+		if( list.size() > 0 ) {
+			script = list.get(0);
+			list = getTagsByName( script, DataSourceFormat.PARSER_SCRIPT_PATH_ELEMENT_NAME );
+			path = list.size() > 0 ? list.get(0).getTextContent().trim() : null;
+			bpm.setParserFilePath( path );
+			list = getTagsByName( script, DataSourceFormat.PARSER_SCRIPT_OUTPUT_PATH_ELEMENT_NAME );
+			datapath= list.size() > 0 ? list.get(0).getTextContent().trim() : null;
+			bpm.setDataOutputPath( datapath );
+			
+		} else {
+			logger.error("No script tag found for bash parser");
+		}
+		
+		return ( script != null && path != null && datapath != null );
 	}
 	
 	private boolean populateHttpAccess( Node accessNode, HTTPAccess obj ) {
@@ -279,7 +354,4 @@ public class DataSourceBuilder extends XMLParser {
 		}
 		return varMap;
 	}
-	
-	
-	
 }

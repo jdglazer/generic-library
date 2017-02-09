@@ -1,6 +1,13 @@
 package com.jdglazer.remote.dataflow.parsers;
 
-public class ParserModelBase {
+import java.io.Serializable;
+
+public class ParserModelBase implements Serializable {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	
 	//Tells the parser where to write output from the parser to
 	private String outputFileDirectory;
@@ -9,7 +16,7 @@ public class ParserModelBase {
 	//The path to the parser file
 	private String parserFilePath;
 	
-	public enum Language {
+	public enum Language implements Serializable {
 		java, bash
 	}
 

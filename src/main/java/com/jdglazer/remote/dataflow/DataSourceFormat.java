@@ -104,7 +104,15 @@ public class DataSourceFormat {
 	 * OPTIONAL
 	 * DEFAULT: A default parser class will be provided by the program
 	 */
-	public static final String PARSER_CLASS_ATTR_NAME = "class";
+	public static final String PARSER_LANG_ATTR_NAME = "lang";
+	
+	public static final String JAVA_PARSER_CLASS_ELEMENT_NAME = "class";
+	
+	public static final String PARSER_SCRIPT_ELEMENT_NAME = "script";
+	
+	public static final String PARSER_SCRIPT_PATH_ELEMENT_NAME = "path";
+	
+	public static final String PARSER_SCRIPT_OUTPUT_PATH_ELEMENT_NAME = "datapath";
 	
 	/**
 	 * The minimum length between updates from a data source ( in milliseconds)

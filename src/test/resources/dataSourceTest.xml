@@ -1,15 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!-- updates every 6 minutes -->
-<datasource name="test-source" updateInterval="765000">
-	<access protocol="socket">
-		<port>993</port>
-		<ip>10.10.15.242</ip>
-		<getlist>
-			<element>passwd:jr53gt43#</element>
-			<element>unformatted:false</element>
-		</getlist>
-		<postlist>
-			<element>usrname:jdglazer24</element>
-		</postlist>
-	</access>
-</datasource>
+<datasources>
+	<datasource name="test-source-1" updateInterval="3600000">
+		<access protocol="http">
+			<address>http://www.accuweather.com </address>
+			<getlist>
+				<element>passwd:jr53gt43#</element>
+				<element>unformatted:false</element>
+			</getlist>
+			<postlist>
+				<element> usrname:jdglazer24</element>
+			</postlist>
+		</access>
+		<parser lang='java'>
+			<class>com.jglazer.test.MyClass</class>
+		</parser>
+	</datasource>
+	<datasource name="test-source-2" updateInterval="60000">
+		<access protocol="socket">
+			<port>993 </port>
+			<ip> 192.168.85.81</ip>
+		</access>
+		<parser lang='bash'>
+			<script>
+				<path> /var/bin/myparser</path>
+				<datapath>/var/data/my-data-folder</datapath>
+			</script>
+		</parser>
+	</datasource>
+</datasources>

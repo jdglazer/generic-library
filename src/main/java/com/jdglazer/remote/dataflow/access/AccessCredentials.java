@@ -3,9 +3,11 @@
  */
 package com.jdglazer.remote.dataflow.access;
 
+import java.io.Serializable;
+
 import com.jdglazer.remote.dataflow.DataSource;
 
-public class AccessCredentials {
+public class AccessCredentials implements Serializable {
 	
 	private DataSource.Protocol protocol;
 	

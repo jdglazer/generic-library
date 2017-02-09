@@ -3,6 +3,7 @@ package com.jdglazer.remote.dataflow;
 import java.io.Serializable;
 
 import com.jdglazer.remote.dataflow.access.AccessCredentials;
+import com.jdglazer.remote.dataflow.parsers.ParserModelBase;
 
 public class DataSource implements Serializable {
 
@@ -15,7 +16,7 @@ public class DataSource implements Serializable {
 	
 	private AccessCredentials access;
 	
-	private DataSourceParserBase datasourceParser;
+	private ParserModelBase datasourceParser;
 	
 	public int getUpdateInterval() {
 		return updateInterval;
@@ -29,7 +30,7 @@ public class DataSource implements Serializable {
 		return access;
 	}
 	
-	public DataSourceParserBase getDatasourceParser() {
+	public ParserModelBase getDatasourceParser() {
 		return datasourceParser;
 	}
 	
@@ -45,11 +46,11 @@ public class DataSource implements Serializable {
 		this.access = access;
 	}
 	
-	public void getDatasourceParser( DataSourceParserBase datasourceParser ) {
+	public void setDatasourceParser( ParserModelBase datasourceParser ) {
 		this.datasourceParser = datasourceParser;
 	}
 	
-	public enum Protocol {
+	public enum Protocol implements Serializable {
 		http, https, ssh, socket
 	}
 }

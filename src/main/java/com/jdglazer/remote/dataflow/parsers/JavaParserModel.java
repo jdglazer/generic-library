@@ -1,6 +1,13 @@
 package com.jdglazer.remote.dataflow.parsers;
 
-public class JavaParserModel extends ParserModelBase {
+import java.io.Serializable;
+
+public class JavaParserModel extends ParserModelBase implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	//The base class/interface that all java parsers must extend
 	private static final Class requiredParserBase = JavaParserModel.class;
 	
