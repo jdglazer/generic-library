@@ -40,4 +40,8 @@ class DataSourceThreadHandler implements Runnable {
 	public boolean parseInProgress() {
 		return parseInProgress;
 	}
+	
+	public DataSource getDataSource() {
+		return datasource;
+	}
 }
