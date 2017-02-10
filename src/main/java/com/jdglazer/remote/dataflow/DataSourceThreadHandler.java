@@ -3,6 +3,8 @@
  */
 package com.jdglazer.remote.dataflow;
 
+import java.util.Date;
+
 class DataSourceThreadHandler implements Runnable {
 	
 	private DataSource datasource;
@@ -19,6 +21,8 @@ class DataSourceThreadHandler implements Runnable {
 		while( running ) {
 			parseInProgress = true;
 			//Code to perform data collection
+			Date d = new Date( System.currentTimeMillis() );
+			System.out.println(  ""+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"  Running collection for data source: " + datasource.getName() );
 			try {
 				parseInProgress = false;
 				Thread.sleep( (long) datasource.getUpdateInterval() );

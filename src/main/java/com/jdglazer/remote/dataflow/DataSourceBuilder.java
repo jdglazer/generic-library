@@ -60,7 +60,7 @@ public class DataSourceBuilder extends XMLParser {
 	
 	/**
 	 * Parses datasource xml file and builds a DataSource object from it
-	 * @return DataSource object based on information in datasource file
+	 * @return DataSource map of data sources based on information in data source file
 	 */
 	public Map<String, DataSource> build() {
 		if( getData() ) {

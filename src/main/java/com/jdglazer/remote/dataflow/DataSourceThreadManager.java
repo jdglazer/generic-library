@@ -18,14 +18,14 @@ public class DataSourceThreadManager {
 	/**
 	 * Contains all the active data source threads and runnables
 	 */
-	private volatile HashMap<String, ActiveDataSource> activeSources;
+	private volatile HashMap<String, ActiveDataSource> activeSources = new HashMap<String, ActiveDataSource>();
 	/**
      * For data sources the we want to take out of active status and set for removal.
      * This list will periodically be cleaned of threads that are set to no longer running.
      * We need this as a stagng area for threads that have been set to stop collecting, but 
      * are still running. We don't want to kill a thread in the middle of a collection
 	 */
-	private volatile ArrayList<ActiveDataSource> sourcesToRemove;
+	private volatile ArrayList<ActiveDataSource> sourcesToRemove = new ArrayList<ActiveDataSource>();
 	/**
 	 * All folders from which data source xmls are collected
 	 */

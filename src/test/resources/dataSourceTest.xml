@@ -28,4 +28,28 @@
 			</script>
 		</parser>
 	</datasource>
+	<datasource name="test-source-3" updateInterval="20000">
+		<access protocol="https">
+			<address>https://www.awebsite.com</address>
+			<getlist>
+				<element>uname:joshua</element>
+			</getlist>
+		</access>
+		<parser lang='bash'>
+			<script>
+				<path> /var/bin/tester.sh</path>
+				<datapath>/var/data/my-data-folder</datapath>
+			</script>
+		</parser>
+	</datasource>
+	<datasource name="test-source-4" updateInterval="10000">
+		<access protocol="ssh">
+			<user>jglazer</user>
+			<password>75dsb5yi#!</password>
+			<ip>10.10.5.245</ip>
+		</access>
+		<parser lang='java'>
+			<class>jglazer.name.test.MyClass</class>
+		</parser>
+	</datasource>
 </datasources>
