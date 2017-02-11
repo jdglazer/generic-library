@@ -1,7 +1,7 @@
 /**
  * A class to encase the collection from a single DataSource in a single thread
  */
-package com.jdglazer.remote.dataflow;
+package com.jdglazer.dataflow.collector;
 
 import java.util.Date;
 

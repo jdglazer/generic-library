@@ -1,9 +1,9 @@
-package com.jdglazer.remote.dataflow;
+package com.jdglazer.dataflow.collector;
 
 import java.io.Serializable;
 
-import com.jdglazer.remote.dataflow.access.AccessCredentials;
-import com.jdglazer.remote.dataflow.parsers.ParserModelBase;
+import com.jdglazer.dataflow.collector.access.AccessCredentials;
+import com.jdglazer.dataflow.collector.parsers.ParserModelBase;
 
 public class DataSource implements Serializable {
 

@@ -2,7 +2,7 @@
  * A class to convert an xml data source definition into a DataSource object
  * @author Glazer, Joshua D.
  */
-package com.jdglazer.remote.dataflow;
+package com.jdglazer.dataflow.collector;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,15 +18,15 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import com.jdglazer.remote.dataflow.access.AccessCredentials;
-import com.jdglazer.remote.dataflow.access.HTTPAccess;
-import com.jdglazer.remote.dataflow.access.HTTPSAccess;
-import com.jdglazer.remote.dataflow.access.SSHAccess;
-import com.jdglazer.remote.dataflow.access.SocketAccess;
-import com.jdglazer.remote.dataflow.parsers.BashParserModel;
-import com.jdglazer.remote.dataflow.parsers.JavaParserModel;
-import com.jdglazer.remote.dataflow.parsers.ParserModelBase;
-import com.jdglazer.remote.dataflow.parsers.ParserModelBase.Language;
+import com.jdglazer.dataflow.collector.access.AccessCredentials;
+import com.jdglazer.dataflow.collector.access.HTTPAccess;
+import com.jdglazer.dataflow.collector.access.HTTPSAccess;
+import com.jdglazer.dataflow.collector.access.SSHAccess;
+import com.jdglazer.dataflow.collector.access.SocketAccess;
+import com.jdglazer.dataflow.collector.parsers.BashParserModel;
+import com.jdglazer.dataflow.collector.parsers.JavaParserModel;
+import com.jdglazer.dataflow.collector.parsers.ParserModelBase;
+import com.jdglazer.dataflow.collector.parsers.ParserModelBase.Language;
 import com.jdglazer.utils.xml.XMLParser;
 
 public class DataSourceBuilder extends XMLParser {

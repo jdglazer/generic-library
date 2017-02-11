@@ -2,7 +2,7 @@
  * A class that holds a reference to a data source Thread and its DataSourceThreadHandler Runnable.
  * Main function is to consolidate running data source functionality in one place.
  */
-package com.jdglazer.remote.dataflow;
+package com.jdglazer.dataflow.collector;
 
 public class ActiveDataSource {
 	

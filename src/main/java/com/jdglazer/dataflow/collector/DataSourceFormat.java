@@ -1,7 +1,7 @@
 /**
  * Defines all constant values for indentifier names in the DataSource xml format
  */
-package com.jdglazer.remote.dataflow;
+package com.jdglazer.dataflow.collector;
 
 public class DataSourceFormat {
 	

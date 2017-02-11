@@ -3,7 +3,7 @@
  * An instance of this class will provide access to all threads and their associated data sources
  */
 
-package com.jdglazer.remote.dataflow;
+package com.jdglazer.dataflow.collector;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -10,9 +10,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import com.jdglazer.remote.dataflow.DataSource;
-import com.jdglazer.remote.dataflow.DataSourceBuilder;
-import com.jdglazer.remote.dataflow.DataSourceThreadManager;
+import com.jdglazer.dataflow.collector.DataSource;
+import com.jdglazer.dataflow.collector.DataSourceBuilder;
+import com.jdglazer.dataflow.collector.DataSourceThreadManager;
 
 public class DataSourceThreadHandlerTest {
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {

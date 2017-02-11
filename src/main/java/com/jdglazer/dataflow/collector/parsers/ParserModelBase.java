@@ -1,4 +1,4 @@
-package com.jdglazer.remote.dataflow.parsers;
+package com.jdglazer.dataflow.collector.parsers;
 
 import java.io.Serializable;
 

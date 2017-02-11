@@ -1,9 +1,9 @@
-package com.jdglazer.remote.dataflow.access;
+package com.jdglazer.dataflow.collector.access;
 
 import java.io.Serializable;
 import java.util.Map;
 
-import com.jdglazer.remote.dataflow.DataSource;
+import com.jdglazer.dataflow.collector.DataSource;
 
 public class HTTPAccess extends AccessCredentials implements Serializable {
 	

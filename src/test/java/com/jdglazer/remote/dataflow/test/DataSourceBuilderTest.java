@@ -8,14 +8,14 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import com.jdglazer.remote.dataflow.DataSource;
-import com.jdglazer.remote.dataflow.DataSourceBuilder;
-import com.jdglazer.remote.dataflow.access.AccessCredentials;
-import com.jdglazer.remote.dataflow.access.HTTPAccess;
-import com.jdglazer.remote.dataflow.access.SSHAccess;
-import com.jdglazer.remote.dataflow.access.SocketAccess;
-import com.jdglazer.remote.dataflow.parsers.BashParserModel;
-import com.jdglazer.remote.dataflow.parsers.JavaParserModel;
+import com.jdglazer.dataflow.collector.DataSource;
+import com.jdglazer.dataflow.collector.DataSourceBuilder;
+import com.jdglazer.dataflow.collector.access.AccessCredentials;
+import com.jdglazer.dataflow.collector.access.HTTPAccess;
+import com.jdglazer.dataflow.collector.access.SSHAccess;
+import com.jdglazer.dataflow.collector.access.SocketAccess;
+import com.jdglazer.dataflow.collector.parsers.BashParserModel;
+import com.jdglazer.dataflow.collector.parsers.JavaParserModel;
 
 public class DataSourceBuilderTest {
 	

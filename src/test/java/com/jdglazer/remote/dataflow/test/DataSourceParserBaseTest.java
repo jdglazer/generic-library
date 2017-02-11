@@ -1,5 +1,5 @@
 package com.jdglazer.remote.dataflow.test;
-import com.jdglazer.remote.dataflow.DataSourceParserBase;
+import com.jdglazer.dataflow.collector.DataSourceParserBase;
 
 public class DataSourceParserBaseTest implements DataSourceParserBase {
 

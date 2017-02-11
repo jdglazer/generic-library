@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-import com.jdglazer.utils.communicate.http.HttpRequest;
-import com.jdglazer.utils.communicate.http.HttpRequestParams;
+import com.jdglazer.dataflow.utils.communicate.http.HttpRequest;
+import com.jdglazer.dataflow.utils.communicate.http.HttpRequestParams;
 
 public class DoDownload  {
 	

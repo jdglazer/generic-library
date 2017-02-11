@@ -1,11 +1,11 @@
 /**
  * A class to hold access credentials needed to use datasource
  */
-package com.jdglazer.remote.dataflow.access;
+package com.jdglazer.dataflow.collector.access;
 
 import java.io.Serializable;
 
-import com.jdglazer.remote.dataflow.DataSource;
+import com.jdglazer.dataflow.collector.DataSource;
 
 public class AccessCredentials implements Serializable {
 	
