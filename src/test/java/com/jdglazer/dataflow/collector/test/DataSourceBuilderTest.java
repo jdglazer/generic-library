@@ -1,4 +1,4 @@
-package com.jdglazer.remote.dataflow.test;
+package com.jdglazer.dataflow.collector.test;
 
 import java.io.File;
 import java.io.IOException;

@@ -5,10 +5,9 @@
 
 package com.jdglazer.dataflow.collector;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,20 +17,14 @@ public class DataSourceThreadManager {
 	/**
 	 * Contains all the active data source threads and runnables
 	 */
-	private volatile HashMap<String, ActiveDataSource> activeSources = new HashMap<String, ActiveDataSource>();
+	private volatile static HashMap<String, ActiveDataSource> activeSources = new HashMap<String, ActiveDataSource>();
 	/**
      * For data sources the we want to take out of active status and set for removal.
      * This list will periodically be cleaned of threads that are set to no longer running.
-     * We need this as a stagng area for threads that have been set to stop collecting, but 
+     * We need this as a staging area for threads that have been set to stop collecting, but 
      * are still running. We don't want to kill a thread in the middle of a collection
 	 */
-	private volatile ArrayList<ActiveDataSource> sourcesToRemove = new ArrayList<ActiveDataSource>();
-	/**
-	 * All folders from which data source xmls are collected
-	 */
-	private static ArrayList<String> DATA_SOURCE_FILE_FOLDERS;
-	
-	private static String SERIALIZED_DATA_SOURCES;
+	private volatile static ArrayList<ActiveDataSource> sourcesToRemove = new ArrayList<ActiveDataSource>();
 	
 	/**
 	 * Adds a data source

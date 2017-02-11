@@ -1,4 +1,4 @@
-package com.jdglazer.remote.dataflow.test;
+package com.jdglazer.dataflow.collector.test;
 import com.jdglazer.dataflow.collector.DataSourceParserBase;
 
 public class DataSourceParserBaseTest implements DataSourceParserBase {
