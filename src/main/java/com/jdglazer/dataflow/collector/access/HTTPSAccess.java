@@ -13,4 +13,9 @@ public class HTTPSAccess extends HTTPAccess implements Serializable {
 	public HTTPSAccess() {
 		setProtocol( DataSource.Protocol.https );
 	}
+	
+	@Override
+	public boolean equals( Object accessCreds ) {
+		return super.equals(accessCreds);
+	}
 }

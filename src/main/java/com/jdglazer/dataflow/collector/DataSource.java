@@ -53,4 +53,12 @@ public class DataSource implements Serializable {
 	public enum Protocol implements Serializable {
 		http, https, ssh, socket
 	}
+	
+	@Override
+	public boolean equals( Object datasource ) {
+		if( datasource == null ) return false;
+		if( !( datasource instanceof DataSource) ) return false;
+		DataSource ds = (DataSource) datasource;
+		return ds.getUpdateInterval() == this.updateInterval && ds.getDatasourceParser().equals( this.datasourceParser ) && ds.getName().equals(this.name) && ds.getAccess().equals( this.access );
+	}
 }

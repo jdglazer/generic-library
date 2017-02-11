@@ -29,4 +29,12 @@ public class SocketAccess extends AccessCredentials implements Serializable {
 	public void setPort(short port) {
 		this.port = port;
 	}
+	
+	@Override
+	public boolean equals( Object accessCred ) {
+		if( !super.equals(accessCred) ) return false;
+		if( !( accessCred instanceof  SocketAccess ) ) return false;
+		SocketAccess saccess = (SocketAccess) accessCred;
+		return saccess.getPort() == this.port && saccess.getIp().equals( this.ip );
+	}
 }

@@ -25,4 +25,11 @@ public class JavaParserModel extends ParserModelBase implements Serializable {
 		this.parser = parser;
 	}
 	
+	@Override
+	public boolean equals( Object javaParserModel ) {
+		if( javaParserModel == null ) return false;
+		if( super.equals(javaParserModel ) ) return false;
+		JavaParserModel jpm = (JavaParserModel) javaParserModel;
+		return jpm.getParser().equals( this.parser );
+	}
 }

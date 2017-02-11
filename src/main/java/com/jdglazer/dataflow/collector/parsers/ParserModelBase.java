@@ -35,4 +35,20 @@ public class ParserModelBase implements Serializable {
 	public void setParserFilePath(String parserFilePath) {
 		this.parserFilePath = parserFilePath;
 	}
+
+	public String getOutputFileDirectory() {
+		return outputFileDirectory;
+	}
+
+	public void setOutputFileDirectory(String outputFileDirectory) {
+		this.outputFileDirectory = outputFileDirectory;
+	}
+	
+	@Override
+	public boolean equals( Object parserModelBase ) {
+		if( parserModelBase == null ) return false;
+		if( !( parserModelBase instanceof ParserModelBase ) ) return false;
+		ParserModelBase pmb = (ParserModelBase) parserModelBase;
+		return pmb.getLanguage().equals( this.language ) && pmb.getParserFilePath().equals( this.parserFilePath ) && pmb.getOutputFileDirectory().equals( this.outputFileDirectory );
+	}
 }

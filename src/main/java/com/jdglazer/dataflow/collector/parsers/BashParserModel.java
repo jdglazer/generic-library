@@ -18,4 +18,12 @@ public class BashParserModel extends ParserModelBase implements Serializable {
 		this.dataOutputPath = dataOutputPath;
 	}
 	
+	@Override
+	public boolean equals( Object bashParserModel ) {
+		if( !super.equals( bashParserModel ) ) return false;
+		if( !( bashParserModel instanceof BashParserModel ) ) return false;
+		BashParserModel bpm = (BashParserModel) bashParserModel;
+		return bpm.getDataOutputPath().equals( this.dataOutputPath );
+	}
+	
 }

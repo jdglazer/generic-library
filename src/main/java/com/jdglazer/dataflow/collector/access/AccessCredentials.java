@@ -18,5 +18,12 @@ public class AccessCredentials implements Serializable {
 	public DataSource.Protocol getProtocol() {
 		return protocol;
 	}
+	
+	@Override
+	public boolean equals( Object access ) {
+		if ( access == null ) return false;
+		if ( !( access instanceof AccessCredentials ) ) return false;
+		return this.protocol.equals( ( ( AccessCredentials ) access ).getProtocol() );
+	}
 
 }

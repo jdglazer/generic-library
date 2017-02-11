@@ -43,5 +43,13 @@ public class HTTPAccess extends AccessCredentials implements Serializable {
 	public void setGetVars(Map<String, String> getVars) {
 		this.getVars = getVars;
 	}
+	
+	@Override
+	public boolean equals( Object accessCred ) {
+		if( !super.equals( accessCred ) ) return false;
+		if( !( accessCred instanceof HTTPAccess ) ) return false;
+		HTTPAccess haccess = (HTTPAccess) accessCred;
+		return haccess.getAddress() == this.address && haccess.getGetVars().equals( this.getVars ) && haccess.getPostVars().equals( this.postVars );
+	}
 
 }

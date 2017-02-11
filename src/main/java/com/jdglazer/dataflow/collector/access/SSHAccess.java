@@ -6,9 +6,6 @@ import com.jdglazer.dataflow.collector.DataSource;
 
 public class SSHAccess extends AccessCredentials implements Serializable {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private String user;
@@ -36,5 +33,13 @@ public class SSHAccess extends AccessCredentials implements Serializable {
 	}
 	public void setUser(String user) {
 		this.user = user;
+	}
+	
+	@Override
+	public boolean equals( Object sshAccess ) {
+		if( !super.equals( sshAccess ) ) return false;
+		if( !( sshAccess instanceof SSHAccess ) ) return false;
+		SSHAccess saccess = ( SSHAccess ) sshAccess;
+		return saccess.getIp().equals( this.ip ) && saccess.getPassword().equals( this.password ) && saccess.getUser().equals( this.user ); 
 	}
 }
