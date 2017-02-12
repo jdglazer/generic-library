@@ -7,24 +7,21 @@ import java.util.Date;
 
 class DataSourceThreadHandler implements Runnable {
 	
-	private DataSource datasource;
+	private DataSource datasource;	
 	
-	private boolean running = true;
-	
-	private boolean parseInProgress = false;
+	private boolean running;
 	
 	public DataSourceThreadHandler( DataSource datasource ) {
 		this.datasource = datasource;
+		this.running = false;
 	}
 	
 	public void run() {
 		while( running ) {
-			parseInProgress = true;
 			//Code to perform data collection
 			Date d = new Date( System.currentTimeMillis() );
-			System.out.println(  ""+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+"  Running collection for data source: " + datasource.getName() );
+			System.out.println(  ""+d.getHours()+":"+d.getMinutes()+":"+(d.getSeconds() <10 ? "0":"" )+d.getSeconds()+"  Running collection for data source: " + datasource.getName() );
 			try {
-				parseInProgress = false;
 				Thread.sleep( (long) datasource.getUpdateInterval() );
 			} catch (InterruptedException e) {
 				//log thread error
@@ -39,10 +36,6 @@ class DataSourceThreadHandler implements Runnable {
 	
 	public void stopCollecting() {
 		running = false;
-	}
-	
-	public boolean parseInProgress() {
-		return parseInProgress;
 	}
 	
 	public DataSource getDataSource() {

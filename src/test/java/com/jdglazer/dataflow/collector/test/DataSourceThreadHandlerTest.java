@@ -18,7 +18,7 @@ public class DataSourceThreadHandlerTest {
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
 		DataSourceThreadManager dstm = new DataSourceThreadManager();
 		long startTime = System.currentTimeMillis();
-		DataSourceBuilder dsb = new DataSourceBuilder( new File ("C:\\Users\\jglazer\\git\\generic-library\\src\\test\\resources\\dataSourceTest.xml") );
+		DataSourceBuilder dsb = new DataSourceBuilder( new File ("C:\\Users\\jglazer\\git\\remote-data-collector\\src\\test\\resources\\dataSourceTest.xml") );
 		Map<String, DataSource> datasources = dsb.build();
 		int iterator = 0;
 		
