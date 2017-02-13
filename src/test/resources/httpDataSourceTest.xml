@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<datasources>
+	<datasource name="http1" updateInterval="23000">
+		<access protocol="http">
+			<address>http://usbedrock.com/dataFiles/compressedFiles/downloader.php</address>
+			<getlist>
+				<element>file:NM_bedrock.min.pgrd</element>
+			</getlist>
+		</access>
+		<parser lang="bash">
+			<script>
+				<path>/usr/bin/parser.sh</path>
+				<datapath>/var/data</datapath>
+			</script>
+		</parser>
+	</datasource>
+	<datasource name="https1" updateInterval="30000">
+		<access protocol="https">
+			<address>https://developers.google.com/</address>
+		</access>
+		<parser lang="bash">
+			<script>
+				<path>/usr/bin/parser.sh</path>
+				<datapath>/var/data</datapath>
+			</script>
+		</parser>
+	</datasource>
+</datasources>

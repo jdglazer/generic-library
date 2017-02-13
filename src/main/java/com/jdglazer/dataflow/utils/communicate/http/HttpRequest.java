@@ -15,9 +15,11 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.jdglazer.dataflow.utils.communicate.Request;
 import com.jdglazer.dataflow.utils.communicate.TypeConversion;
+import com.jdglazer.dataflow.utils.communicate.http.HttpRequestParams.RequestType;
 
-public class HttpRequest implements HttpResponse {
+public class HttpRequest extends Request implements HttpResponse {
 	
 	Logger logger = LoggerFactory.getLogger(HttpRequest.class);
 	
@@ -31,13 +33,26 @@ public class HttpRequest implements HttpResponse {
 	private boolean running = false;
 	
 	public HttpRequest( HttpRequestParams params ) {
+		super( HttpRequest.class.getName() );
 		this.params = params;
 		inputBuffer = new byte[1000];
 	}
 	
-	private boolean buildConnection() throws IOException {	
+	protected boolean buildConnection() throws IOException {	
 		try {
-			connection = (HttpURLConnection) params.getRequestURL().openConnection();
+			//we now need to set the request method
+			RequestType type = params.getRequestType();
+			//if we are using post method, we need to do some extra work to set post variables
+			if( type.equals(RequestType.POST) ) {
+				//we pass post variables in output stream
+				connection.setDoOutput(true);
+				//creates a valid string for post variables (substring(1) included to exclude the ? character returned by formatHttpURL)
+				byte [] posts = HttpRequestParams.formatHttpURL("", params.getPostGetVars() ).substring(1).getBytes();
+				//set post variables
+				connection.getOutputStream().write( posts );
+			}
+			connection.setRequestMethod( type.toString() );
+			
 			responseLength = connection.getContentLength();
 			httpInput = connection.getInputStream();
 			return true;
@@ -51,6 +66,7 @@ public class HttpRequest implements HttpResponse {
 		running = true;
 		try {
 			if( connection == null ) {
+				setConnection( (HttpURLConnection) params.getRequestURL().openConnection() );
 				buildConnection();
 			}
 			
@@ -72,7 +88,10 @@ public class HttpRequest implements HttpResponse {
 				logger.warn( "Null response from "+params.getRequestURL() );
 			}
 		} catch( IOException ioe) {
-			logger.error("Error reading from "+params.getRequestURL() );
+			try {
+				logger.error("Error reading from "+params.getRequestURL() );
+			} catch (MalformedURLException e) {
+			}
 		}
 		running = false;
 		return null;
@@ -83,6 +102,7 @@ public class HttpRequest implements HttpResponse {
 		String content = null;
 		try {
 			if( connection == null ) {
+				setConnection ( (HttpURLConnection) params.getRequestURL().openConnection() );
 				buildConnection();
 			}
 			responseLength = connection.getContentLength();
@@ -101,7 +121,10 @@ public class HttpRequest implements HttpResponse {
 			}
 			
 		} catch( IOException ioe ) {
-			logger.error("Failed to read from "+params.getRequestURL());
+			try {
+				logger.error("Failed to read from "+params.getRequestURL());
+			} catch (MalformedURLException e) {
+			}
 		}
 		running = false;
 		return content;
@@ -111,6 +134,7 @@ public class HttpRequest implements HttpResponse {
 		running = true;
 		try {
 			if( connection == null ) {
+				setConnection( (HttpURLConnection) params.getRequestURL().openConnection() );
 				buildConnection();
 			}
 			responseLength = connection.getContentLength();
@@ -126,7 +150,9 @@ public class HttpRequest implements HttpResponse {
 			
 			running = false;
 		} catch( IOException ioe ) {
-			logger.error("Could not read from "+params.getRequestURL()+" to file "+file);
+			try {
+				logger.error("Could not read from "+params.getRequestURL()+" to file "+file);
+			} catch (MalformedURLException e) {	}
 			return false;
 		}
 	
@@ -164,5 +190,17 @@ public class HttpRequest implements HttpResponse {
 		return connection == null ?
 				-1 : 
 				inputProgress;
+	}
+	
+	protected HttpRequestParams getParams() {
+		return params;
+	}
+	
+	protected void setConnection( HttpURLConnection connection ) {
+		this.connection = connection;
+	}
+	
+	protected HttpURLConnection getConnection() {
+		return connection;
 	}
 }
