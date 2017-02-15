@@ -1,4 +1,4 @@
-package com.jdglazer.dataflow.collector.parsers;
+package com.jdglazer.dataflow.collector.parser.models;
 
 import java.io.Serializable;
 

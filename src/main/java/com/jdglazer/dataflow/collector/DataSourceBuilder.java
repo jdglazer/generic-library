@@ -6,6 +6,7 @@ package com.jdglazer.dataflow.collector;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,10 +24,12 @@ import com.jdglazer.dataflow.collector.access.HTTPAccess;
 import com.jdglazer.dataflow.collector.access.HTTPSAccess;
 import com.jdglazer.dataflow.collector.access.SSHAccess;
 import com.jdglazer.dataflow.collector.access.SocketAccess;
-import com.jdglazer.dataflow.collector.parsers.BashParserModel;
-import com.jdglazer.dataflow.collector.parsers.JavaParserModel;
-import com.jdglazer.dataflow.collector.parsers.ParserModelBase;
-import com.jdglazer.dataflow.collector.parsers.ParserModelBase.Language;
+import com.jdglazer.dataflow.collector.parser.models.BashParserModel;
+import com.jdglazer.dataflow.collector.parser.models.JavaParserModel;
+import com.jdglazer.dataflow.collector.parser.models.ParserModelBase;
+import com.jdglazer.dataflow.collector.parser.models.ParserModelBase.Language;
+import com.jdglazer.dataflow.collector.parser.models.RegexParserModel;
+import com.jdglazer.dataflow.collector.parser.models.RegexParserModel.Regex;
 import com.jdglazer.utils.xml.XMLParser;
 
 public class DataSourceBuilder extends XMLParser {
@@ -217,6 +220,11 @@ public class DataSourceBuilder extends XMLParser {
 						parserModel.setLanguage(language);
 						populateBashParserModel( parserNode, (BashParserModel) parserModel );
 						break;
+					case none:
+						parserModel = new RegexParserModel();
+						parserModel.setLanguage(language);
+						populateRegexParserModel( parserNode, (RegexParserModel) parserModel );
+						break;
 					}
 					
 				} catch( Exception e ) {
@@ -262,6 +270,20 @@ public class DataSourceBuilder extends XMLParser {
 		}
 		
 		return ( script != null && path != null && datapath != null );
+	}
+	
+	private boolean populateRegexParserModel( Node parseMe, RegexParserModel rpm) {
+		List<Node> list = getTagsByName( parseMe, DataSourceFormat.PARSER_REGEX_ELEMENT_NAME );
+		List<Regex> regexList = new ArrayList<Regex>();
+		for( Node regex : list ) {
+			String r = regex.getTextContent().trim();
+			if( r != null ) {
+				Regex re = new Regex();
+				re.setRegex( r );
+				regexList.add( re );
+			}
+		}
+		return true;
 	}
 	
 	private boolean populateHttpAccess( Node accessNode, HTTPAccess obj ) {

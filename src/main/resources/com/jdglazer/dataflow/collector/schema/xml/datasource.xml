@@ -16,7 +16,7 @@
 		<port></port>
 		<key></key>
 	</access>
-	<parser lang="java|bash|perl">
+	<parser lang="java|bash|perl|none">
 	<!--  For a java class we pass in the raw input as a byte stream -->
 		<class></class>
 	<!-- For a script, we create a temporary file for the data and pass the path of the file to the script -->

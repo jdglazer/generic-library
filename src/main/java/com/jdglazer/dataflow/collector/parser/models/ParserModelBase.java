@@ -1,4 +1,4 @@
-package com.jdglazer.dataflow.collector.parsers;
+package com.jdglazer.dataflow.collector.parser.models;
 
 import java.io.Serializable;
 
@@ -17,7 +17,7 @@ public class ParserModelBase implements Serializable {
 	private String parserFilePath;
 	
 	public enum Language implements Serializable {
-		java, bash
+		java, bash, none
 	}
 
 	public Language getLanguage() {

@@ -3,7 +3,7 @@ package com.jdglazer.dataflow.collector;
 import java.io.Serializable;
 
 import com.jdglazer.dataflow.collector.access.AccessCredentials;
-import com.jdglazer.dataflow.collector.parsers.ParserModelBase;
+import com.jdglazer.dataflow.collector.parser.models.ParserModelBase;
 
 public class DataSource implements Serializable {
 

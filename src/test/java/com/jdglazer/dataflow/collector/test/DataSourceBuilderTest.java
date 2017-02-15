@@ -14,8 +14,8 @@ import com.jdglazer.dataflow.collector.access.AccessCredentials;
 import com.jdglazer.dataflow.collector.access.HTTPAccess;
 import com.jdglazer.dataflow.collector.access.SSHAccess;
 import com.jdglazer.dataflow.collector.access.SocketAccess;
-import com.jdglazer.dataflow.collector.parsers.BashParserModel;
-import com.jdglazer.dataflow.collector.parsers.JavaParserModel;
+import com.jdglazer.dataflow.collector.parser.models.BashParserModel;
+import com.jdglazer.dataflow.collector.parser.models.JavaParserModel;
 
 public class DataSourceBuilderTest {
 	

@@ -114,6 +114,8 @@ public class DataSourceFormat {
 	
 	public static final String PARSER_SCRIPT_OUTPUT_PATH_ELEMENT_NAME = "datapath";
 	
+	public static final String PARSER_REGEX_ELEMENT_NAME = "regex";
+	
 	/**
 	 * The minimum length between updates from a data source ( in milliseconds)
 	 */
