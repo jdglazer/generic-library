@@ -24,13 +24,16 @@ import com.jdglazer.dataflow.collector.access.HTTPAccess;
 import com.jdglazer.dataflow.collector.access.HTTPSAccess;
 import com.jdglazer.dataflow.collector.access.SSHAccess;
 import com.jdglazer.dataflow.collector.access.SocketAccess;
+import com.jdglazer.dataflow.collector.crawlers.Crawler;
 import com.jdglazer.dataflow.collector.parser.models.BashParserModel;
 import com.jdglazer.dataflow.collector.parser.models.JavaParserModel;
 import com.jdglazer.dataflow.collector.parser.models.ParserModelBase;
 import com.jdglazer.dataflow.collector.parser.models.ParserModelBase.Language;
 import com.jdglazer.dataflow.collector.parser.models.RegexParserModel;
 import com.jdglazer.dataflow.collector.parser.models.RegexParserModel.Regex;
+import com.jdglazer.dataflow.utils.communicate.TypeConversion;
 import com.jdglazer.utils.xml.XMLParser;
+import com.jdglazer.utils.xml.XMLParserTools;
 
 public class DataSourceBuilder extends XMLParser {
 	
@@ -152,7 +155,7 @@ public class DataSourceBuilder extends XMLParser {
 	private AccessCredentials getAccessCredentials( Node dataSource ) {
 		AccessCredentials accessCredentials = null;
 		
-		List<Node> nl = getTagsByName( dataSource,  DataSourceFormat.CREDENTIAL_PROVIDER_NAME );
+		List<Node> nl = XMLParserTools.getTagsByName( dataSource,  DataSourceFormat.CREDENTIAL_PROVIDER_NAME );
 		Node access = nl.size() > 0 ? nl.get(0) : null;
 		
 		if( access != null ) {
@@ -200,7 +203,7 @@ public class DataSourceBuilder extends XMLParser {
 	
 	private ParserModelBase getParser( Node datasource ) {
 		ParserModelBase parserModel = null;
-		List<Node> nl = getTagsByName( datasource, DataSourceFormat.PARSER_CLASS_ELEMENT_NAME );
+		List<Node> nl = XMLParserTools.getTagsByName( datasource, DataSourceFormat.PARSER_CLASS_ELEMENT_NAME );
 		if( nl.size() > 0 ) {
 			Node parserNode = nl.get(0);
 			NamedNodeMap nm = parserNode.getAttributes();
@@ -240,7 +243,7 @@ public class DataSourceBuilder extends XMLParser {
 	}
 	
 	private boolean populateJavaParserModel( Node parser, JavaParserModel jpm ) {
-		List<Node> list = getTagsByName( parser, DataSourceFormat.JAVA_PARSER_CLASS_ELEMENT_NAME );
+		List<Node> list = XMLParserTools.getTagsByName( parser, DataSourceFormat.JAVA_PARSER_CLASS_ELEMENT_NAME );
 		if( list.size() > 0 ) {
 			Node classTag = list.get(0);
 			jpm.setParserFilePath( classTag.getTextContent().trim() ); 
@@ -253,15 +256,15 @@ public class DataSourceBuilder extends XMLParser {
 	}
 	
 	private boolean populateBashParserModel( Node parser, BashParserModel bpm ) {
-		List<Node> list = getTagsByName( parser, DataSourceFormat.PARSER_SCRIPT_ELEMENT_NAME);
+		List<Node> list = XMLParserTools.getTagsByName( parser, DataSourceFormat.PARSER_SCRIPT_ELEMENT_NAME);
 		Node script = null;
 		String path = null, datapath = null;
 		if( list.size() > 0 ) {
 			script = list.get(0);
-			list = getTagsByName( script, DataSourceFormat.PARSER_SCRIPT_PATH_ELEMENT_NAME );
+			list = XMLParserTools.getTagsByName( script, DataSourceFormat.PARSER_SCRIPT_PATH_ELEMENT_NAME );
 			path = list.size() > 0 ? list.get(0).getTextContent().trim() : null;
 			bpm.setParserFilePath( path );
-			list = getTagsByName( script, DataSourceFormat.PARSER_SCRIPT_OUTPUT_PATH_ELEMENT_NAME );
+			list = XMLParserTools.getTagsByName( script, DataSourceFormat.PARSER_SCRIPT_OUTPUT_PATH_ELEMENT_NAME );
 			datapath= list.size() > 0 ? list.get(0).getTextContent().trim() : null;
 			bpm.setDataOutputPath( datapath );
 			
@@ -273,7 +276,7 @@ public class DataSourceBuilder extends XMLParser {
 	}
 	
 	private boolean populateRegexParserModel( Node parseMe, RegexParserModel rpm) {
-		List<Node> list = getTagsByName( parseMe, DataSourceFormat.PARSER_REGEX_ELEMENT_NAME );
+		List<Node> list = XMLParserTools.getTagsByName( parseMe, DataSourceFormat.PARSER_REGEX_ELEMENT_NAME );
 		List<Regex> regexList = new ArrayList<Regex>();
 		for( Node regex : list ) {
 			String r = regex.getTextContent().trim();
@@ -289,12 +292,13 @@ public class DataSourceBuilder extends XMLParser {
 	private boolean populateHttpAccess( Node accessNode, HTTPAccess obj ) {
 		String address = null;
 		Map<String, String> getList = null, postList = null;
+		Crawler crawler = null;
 		if ( accessNode != null ) {
-			List<Node> list = getTagsByName( accessNode, DataSourceFormat.WEB_ADDRESS_ELEMENT_NAME );
+			List<Node> list = XMLParserTools.getTagsByName( accessNode, DataSourceFormat.WEB_ADDRESS_ELEMENT_NAME );
 			address = list.size() > 0 ? list.get(0).getTextContent().trim() : null;
-			list = getTagsByName( accessNode, DataSourceFormat.GET_LIST_ELEMENT_NAME );
+			list = XMLParserTools.getTagsByName( accessNode, DataSourceFormat.GET_LIST_ELEMENT_NAME );
 			getList = list.size() > 0 ? parseVarList( list.get(0) ) : null;
-			list = getTagsByName( accessNode, DataSourceFormat.POST_LIST_ELEMENT_NAME );
+			list = XMLParserTools.getTagsByName( accessNode, DataSourceFormat.POST_LIST_ELEMENT_NAME );
 			postList = list.size() > 0 ? parseVarList( list.get(0) ) : null;
 		} else {
 			logger.error( "Null datasource xml http(s) access node cannot be parsed");
@@ -304,23 +308,24 @@ public class DataSourceBuilder extends XMLParser {
 			obj.setAddress(address);
 			obj.setGetVars(getList);
 			obj.setPostVars(postList);
+			obj.setCrawler( parseCrawler( accessNode ) );
 		}
 		else {
 			logger.error( "Values cannot be set for null HTTPAccess object" );
 		}
 		
-		return (address != null && getList != null && postList != null);
+		return (address != null);
 	}
 	
 	private boolean populateSshAccess( Node accessNode, SSHAccess access ) {
 		String user = null, ip = null, password = null;
 		if( accessNode != null ) {
 			//true when elements are found
-			List<Node> list = getTagsByName( DataSourceFormat.IP_ELEMENT_NAME );
+			List<Node> list = XMLParserTools.getTagsByName( accessNode, DataSourceFormat.IP_ELEMENT_NAME );
 			ip = list.size() > 0 ? list.get(0).getTextContent().trim() : null;
-			list = getTagsByName( DataSourceFormat.PASSWORD_ELEMENT_NAME );
+			list = XMLParserTools.getTagsByName( accessNode, DataSourceFormat.PASSWORD_ELEMENT_NAME );
 			password = list.size() > 0 ? list.get(0).getTextContent().trim() : null;
-			list = getTagsByName( DataSourceFormat.USER_ELEMENT_NAME );
+			list = XMLParserTools.getTagsByName( accessNode, DataSourceFormat.USER_ELEMENT_NAME );
 			user = list.size() > 0 ? list.get(0).getTextContent().trim() : null;
 		} else {
 			logger.error( "Null datasource xml ssh access node cannot be parsed");
@@ -342,9 +347,9 @@ public class DataSourceBuilder extends XMLParser {
 		String ip = null;
 		
 		if(accessNode != null ) {			
-			List<Node> list = getTagsByName(accessNode, DataSourceFormat.IP_ELEMENT_NAME );
+			List<Node> list = XMLParserTools.getTagsByName(accessNode, DataSourceFormat.IP_ELEMENT_NAME );
 			ip = list.size() > 0 ? list.get(0).getTextContent().trim() : null;
-			list = getTagsByName(accessNode, DataSourceFormat.PORT_ELEMENT_NAME );
+			list = XMLParserTools.getTagsByName(accessNode, DataSourceFormat.PORT_ELEMENT_NAME );
 			try {
 				port = list.size() > 0 ? Short.parseShort( list.get(0).getTextContent().trim() ) : -1;
 			} catch( Exception e ) {
@@ -364,9 +369,35 @@ public class DataSourceBuilder extends XMLParser {
 		return ( port > 0 && ip != null );
 	}
 	
+	public Crawler parseCrawler( Node crawler ) {
+		Crawler c = new Crawler();
+		String maxcount, maxsize, maxdepth;
+		maxdepth = XMLParserTools.getNodeAttrValue( crawler, DataSourceFormat.CRAWLER_MAX_DEPTH_ATTR );
+		maxcount = XMLParserTools.getNodeAttrValue( crawler, DataSourceFormat.CRAWLER_MAX_PAGES_ATTR );
+		maxsize = XMLParserTools.getNodeAttrValue( crawler, DataSourceFormat.CRAWLER_MAX_PAGE_SIZE_ATTR );
+		
+		int depth = TypeConversion.stringToInt( maxdepth), 
+			count = TypeConversion.stringToInt( maxcount ),
+			size = TypeConversion.stringToInt( maxsize );
+		
+		c.setMaxDepth( depth );
+		c.setMaxPageCount( count );
+		c.setMaxPageSize( size == 0 ? 1000000 : size);
+		
+		List<Node> list = XMLParserTools.getTagsByName( crawler, DataSourceFormat.CRAWLER_URL_REGEX_ELEMENT );
+		
+		List<String> urls = new ArrayList<String>();
+		for( Node n : list ) {
+			urls.add( n.getTextContent() );
+		}
+		c.setUrlRegexes( urls );
+		
+		return c;
+	}
+	
 	private Map<String, String> parseVarList( Node listRoot ) {
 		Map<String, String> varMap = new HashMap<String,String>();
-		List<Node> nodeList = getTagsByName( listRoot, DataSourceFormat.LIST_ELEMENT_ELEMENT_NAME );
+		List<Node> nodeList = XMLParserTools.getTagsByName( listRoot, DataSourceFormat.LIST_ELEMENT_ELEMENT_NAME );
 		
 		for( Node n : nodeList ) {
 			String [] keyValuePair = n.getTextContent().split( DataSourceFormat.LIST_KEY_VALUE_DELIMITER );

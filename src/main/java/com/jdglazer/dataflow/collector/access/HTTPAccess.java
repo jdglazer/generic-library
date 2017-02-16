@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import com.jdglazer.dataflow.collector.DataSource;
+import com.jdglazer.dataflow.collector.crawlers.Crawler;
 
 public class HTTPAccess extends AccessCredentials implements Serializable {
 	
@@ -13,6 +14,7 @@ public class HTTPAccess extends AccessCredentials implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private String address;
+	private Crawler crawler;
 	private Map<String, String> postVars;
 	private Map<String, String> getVars;
 	
@@ -42,6 +44,14 @@ public class HTTPAccess extends AccessCredentials implements Serializable {
 
 	public void setGetVars(Map<String, String> getVars) {
 		this.getVars = getVars;
+	}
+	
+	public Crawler getCrawler() {
+		return crawler;
+	}
+
+	public void setCrawler(Crawler crawler) {
+		this.crawler = crawler;
 	}
 	
 	@Override

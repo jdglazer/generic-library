@@ -116,6 +116,17 @@ public class DataSourceFormat {
 	
 	public static final String PARSER_REGEX_ELEMENT_NAME = "regex";
 	
+	//CRAWLER NAMES
+	
+	public static final String CRAWLER_CONFIGURATION_ELEMENT = "crawler";
+	
+	public static final String CRAWLER_MAX_DEPTH_ATTR = "maxdepth";
+	
+	public static final String CRAWLER_MAX_PAGES_ATTR = "maxpagecount";
+	
+	public static final String CRAWLER_MAX_PAGE_SIZE_ATTR = "maxpagesize";
+	
+	public static final String CRAWLER_URL_REGEX_ELEMENT = "urlregex";
 	/**
 	 * The minimum length between updates from a data source ( in milliseconds)
 	 */

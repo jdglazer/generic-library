@@ -12,4 +12,13 @@ public abstract class TypeConversion {
 		}
 		return "";
 	}
+	
+	public static int stringToInt( String str ) {
+		int i = 0;
+		try{
+			i = Integer.parseInt( str );
+		} catch ( Exception e ) {
+		}
+		return i;
+	}
 }

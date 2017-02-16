@@ -2,6 +2,9 @@
 <datasource name="" updateInterval="1s|1m|1h|1d|...">
 	<access protocol="http|https|ssh|socket">
 		<address></address>
+		<crawler maxdepth="int" maxpagecount="int" maxpagesize="int">
+			<urlregex></urlregex>
+		</crawler>
 		<getlist>
 			<element>key:value</element>
 			<element>Key:value</element>
