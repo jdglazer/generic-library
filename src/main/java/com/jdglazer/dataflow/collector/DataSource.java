@@ -1,6 +1,7 @@
 package com.jdglazer.dataflow.collector;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import com.jdglazer.dataflow.collector.access.AccessCredentials;
 import com.jdglazer.dataflow.collector.parser.models.ParserModelBase;
@@ -14,6 +15,8 @@ public class DataSource implements Serializable {
 	
 	private String name;
 	
+	private ArrayList<short[]> aliveIntervals;
+ 	
 	private AccessCredentials access;
 	
 	private ParserModelBase datasourceParser;
@@ -60,5 +63,13 @@ public class DataSource implements Serializable {
 		if( !( datasource instanceof DataSource) ) return false;
 		DataSource ds = (DataSource) datasource;
 		return ds.getUpdateInterval() == this.updateInterval && ds.getDatasourceParser().equals( this.datasourceParser ) && ds.getName().equals(this.name) && ds.getAccess().equals( this.access );
+	}
+
+	public ArrayList<short[]> getAliveIntervals() {
+		return aliveIntervals;
+	}
+
+	public void setAliveIntervals(ArrayList<short[]> aliveIntervals) {
+		this.aliveIntervals = aliveIntervals;
 	}
 }

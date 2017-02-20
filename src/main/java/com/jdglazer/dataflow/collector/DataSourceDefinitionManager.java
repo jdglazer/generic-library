@@ -26,7 +26,7 @@ public class DataSourceDefinitionManager {
 	
 	static Logger logger = LoggerFactory.getLogger( DataSourceDefinitionManager.class );
 	
-	private static File [] DATA_SOURCE_FILE_FOLDERS = new File[]{ new File("/var/data") };
+	private static File[] DATA_SOURCE_FILE_FOLDERS = new File[]{new File( "C:\\Users\\jglazer\\Documents\\datasources" )};
 		
 	/**
 	 * Folder in which serialized data source objects are stored

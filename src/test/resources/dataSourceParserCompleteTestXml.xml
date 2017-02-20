@@ -1,0 +1,15 @@
+<?xml version="1.0" charset="UTF-8" ?>
+<datasources>
+	<datasource name="valid-http-1" updateInterval="3600" activeTime="65-87, 144-167">
+		<access protocol="http">
+			<address>http://www.accuweather.com</address>
+			<crawler maxdepth="1" maxpagecount="25" maxpagesize="2000000">
+				<urlregex></urlregex>
+			</crawler>
+		</access>
+		<parser lang="none">
+			<regex>lockheed martin</regex>
+			<regex>leidos</regex>
+		</parser>
+	</datasource>
+</datasources>

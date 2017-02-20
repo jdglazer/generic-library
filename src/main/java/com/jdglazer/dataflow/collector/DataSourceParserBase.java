@@ -4,11 +4,5 @@
 package com.jdglazer.dataflow.collector;
 
 public interface DataSourceParserBase {
-	
-	/**
-	 * 
-	 */
-	public boolean rawDataIn( byte [] input );
-	public <T> T rawDataOut();
-	public void setEncoding(String encoding);
+	public void start();
 }

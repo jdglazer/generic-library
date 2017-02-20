@@ -13,9 +13,8 @@ public class DataSourceXmlFilter implements FileFilter {
 		if( !file.isFile() )
 			return false;
 		
-		String [] nameSegments = file.getName().split(".");
-		
-		if( nameSegments.length < 2 || !nameSegments[nameSegments.length -1].toLowerCase().equals(DATA_SOURCE_FILE_EXT) )
+		String [] nameSegments = file.getName().split("\\.");
+		if( nameSegments.length < 2 || !nameSegments[nameSegments.length -1].toLowerCase().equals(DATA_SOURCE_FILE_EXT) ) 
 			return false;
 		
 		return true;

@@ -22,7 +22,7 @@ class DataSourceThreadHandler implements Runnable {
 			Date d = new Date( System.currentTimeMillis() );
 			System.out.println(  ""+d.getHours()+":"+d.getMinutes()+":"+(d.getSeconds() <10 ? "0":"" )+d.getSeconds()+"  Running collection for data source: " + datasource.getName() );
 			try {
-				Thread.sleep( (long) datasource.getUpdateInterval() );
+				Thread.sleep( (long) datasource.getUpdateInterval() * 1000l );
 			} catch (InterruptedException e) {
 				//log thread error
 				running = false;

@@ -17,4 +17,9 @@ public class DataSourceParserBaseTest implements DataSourceParserBase {
 		
 	}
 
+	public void start() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

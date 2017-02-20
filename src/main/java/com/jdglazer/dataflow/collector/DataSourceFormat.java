@@ -18,7 +18,25 @@ public class DataSourceFormat {
 	public static final String DATA_SOURCE_NAME_ATTR = "name";
 	
 	/**
-	 * This defined the name of the datasource element attribute defining the frequency of reading of the datasource
+	 * The name of the attribute indicating the hours in the week for which the data source should be active
+	 * NOT REQUIRED
+	 * DEFAULT: 0-167 (all hours)
+	 */
+	public static final String DATA_SOURCE_ACTIVE_INTERVAL_ATTR = "activeTime";
+	
+	/**
+	 * The character that separates data source active time interval sets
+	 */
+	public static final String ACTIVE_INTERVAL_DELIMITER = ",";
+	/**
+	 * The character that separates the start and end time in a data source active interval
+	 */
+	public static final String ACTIVE_INTERVAL_START_END_DELIMETER = "-";
+	
+	public static final String ACTIVE_INTERVAL_DEFAULT = "0-167";
+	
+	/**
+	 * This defined the name of the data source element attribute defining the frequency of reading of the datasource
 	 * REQUIRED
 	 */
 	public static final String DATA_SOURCE_UPDATE_INTERVAL_ATTR = "updateInterval";
@@ -130,11 +148,11 @@ public class DataSourceFormat {
 	/**
 	 * The minimum length between updates from a data source ( in milliseconds)
 	 */
-	public static final int MINIMUM_ALLOWED_UPDATE_INTERVAL = 1000;
+	public static final int MINIMUM_ALLOWED_UPDATE_INTERVAL = 1;
 	
 	/**
 	 * The interval between updates assigned by default to a datasource
 	 */
-	public static final int DEFAULT_UPDATE_INTERVAL = 3600000;
+	public static final int DEFAULT_UPDATE_INTERVAL = 3600;
 
 }

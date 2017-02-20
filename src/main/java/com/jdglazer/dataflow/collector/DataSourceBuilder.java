@@ -30,7 +30,6 @@ import com.jdglazer.dataflow.collector.parser.models.JavaParserModel;
 import com.jdglazer.dataflow.collector.parser.models.ParserModelBase;
 import com.jdglazer.dataflow.collector.parser.models.ParserModelBase.Language;
 import com.jdglazer.dataflow.collector.parser.models.RegexParserModel;
-import com.jdglazer.dataflow.collector.parser.models.RegexParserModel.Regex;
 import com.jdglazer.dataflow.utils.communicate.TypeConversion;
 import com.jdglazer.utils.xml.XMLParser;
 import com.jdglazer.utils.xml.XMLParserTools;
@@ -89,7 +88,8 @@ public class DataSourceBuilder extends XMLParser {
 				NamedNodeMap nm = root.getAttributes();
 				if( nm != null ) {
 					Node name = nm.getNamedItem(DataSourceFormat.DATA_SOURCE_NAME_ATTR),
-						 updateInterval = nm.getNamedItem(DataSourceFormat.DATA_SOURCE_UPDATE_INTERVAL_ATTR);
+						 updateInterval = nm.getNamedItem(DataSourceFormat.DATA_SOURCE_UPDATE_INTERVAL_ATTR),
+						 activeTime = nm.getNamedItem( DataSourceFormat.DATA_SOURCE_ACTIVE_INTERVAL_ATTR );
 					if( name != null && updateInterval != null ) {
 						
 						String datasource_name = name.getTextContent().trim();
@@ -127,6 +127,15 @@ public class DataSourceBuilder extends XMLParser {
 							logger.debug( "Invalid parser detected for data source of name "+name+" in file: "+datasource);
 							continue;
 						}
+						
+						//set the parser 
+						ArrayList<short[]> ints = DataSourceAttrValueParser
+									.parserUpdateAliveInterval( activeTime != null 
+																	? activeTime.getTextContent() 
+																	: DataSourceFormat.ACTIVE_INTERVAL_DEFAULT 
+															  );
+						
+						dataSource.setAliveIntervals( ints );
 						dataSource.setDatasourceParser( parser );
 						dataSource.setAccess( accessCredentials );
 						parsedOutDataSources.put( datasource_name, dataSource );
@@ -208,6 +217,7 @@ public class DataSourceBuilder extends XMLParser {
 			Node parserNode = nl.get(0);
 			NamedNodeMap nm = parserNode.getAttributes();
 			Node attr = nm.getNamedItem( DataSourceFormat.PARSER_LANG_ATTR_NAME );
+			List<Node> dataOutputPath = XMLParserTools.getTagsByName(parserNode, DataSourceFormat.PARSER_SCRIPT_OUTPUT_PATH_ELEMENT_NAME);
 			if( attr != null ) {
 				String parserLanguage = attr.getTextContent().trim().toLowerCase();
 				try {
@@ -223,12 +233,18 @@ public class DataSourceBuilder extends XMLParser {
 						parserModel.setLanguage(language);
 						populateBashParserModel( parserNode, (BashParserModel) parserModel );
 						break;
-					case none:
+					default:
 						parserModel = new RegexParserModel();
 						parserModel.setLanguage(language);
 						populateRegexParserModel( parserNode, (RegexParserModel) parserModel );
 						break;
 					}
+					
+					String outPath = null;
+					if( dataOutputPath.size() > 0) {
+						outPath = dataOutputPath.get(0).getTextContent().trim();
+					}
+					parserModel.setOutputFileDirectory( outPath );
 					
 				} catch( Exception e ) {
 					logger.error("Invalid language set for parser");
@@ -264,9 +280,6 @@ public class DataSourceBuilder extends XMLParser {
 			list = XMLParserTools.getTagsByName( script, DataSourceFormat.PARSER_SCRIPT_PATH_ELEMENT_NAME );
 			path = list.size() > 0 ? list.get(0).getTextContent().trim() : null;
 			bpm.setParserFilePath( path );
-			list = XMLParserTools.getTagsByName( script, DataSourceFormat.PARSER_SCRIPT_OUTPUT_PATH_ELEMENT_NAME );
-			datapath= list.size() > 0 ? list.get(0).getTextContent().trim() : null;
-			bpm.setDataOutputPath( datapath );
 			
 		} else {
 			logger.error("No script tag found for bash parser");
@@ -277,13 +290,11 @@ public class DataSourceBuilder extends XMLParser {
 	
 	private boolean populateRegexParserModel( Node parseMe, RegexParserModel rpm) {
 		List<Node> list = XMLParserTools.getTagsByName( parseMe, DataSourceFormat.PARSER_REGEX_ELEMENT_NAME );
-		List<Regex> regexList = new ArrayList<Regex>();
+		List<String> regexList = new ArrayList<String>();
 		for( Node regex : list ) {
 			String r = regex.getTextContent().trim();
 			if( r != null ) {
-				Regex re = new Regex();
-				re.setRegex( r );
-				regexList.add( re );
+				regexList.add( r );
 			}
 		}
 		return true;
@@ -292,7 +303,6 @@ public class DataSourceBuilder extends XMLParser {
 	private boolean populateHttpAccess( Node accessNode, HTTPAccess obj ) {
 		String address = null;
 		Map<String, String> getList = null, postList = null;
-		Crawler crawler = null;
 		if ( accessNode != null ) {
 			List<Node> list = XMLParserTools.getTagsByName( accessNode, DataSourceFormat.WEB_ADDRESS_ELEMENT_NAME );
 			address = list.size() > 0 ? list.get(0).getTextContent().trim() : null;
@@ -369,28 +379,31 @@ public class DataSourceBuilder extends XMLParser {
 		return ( port > 0 && ip != null );
 	}
 	
-	public Crawler parseCrawler( Node crawler ) {
+	public Crawler parseCrawler( Node access ) {
 		Crawler c = new Crawler();
 		String maxcount, maxsize, maxdepth;
-		maxdepth = XMLParserTools.getNodeAttrValue( crawler, DataSourceFormat.CRAWLER_MAX_DEPTH_ATTR );
-		maxcount = XMLParserTools.getNodeAttrValue( crawler, DataSourceFormat.CRAWLER_MAX_PAGES_ATTR );
-		maxsize = XMLParserTools.getNodeAttrValue( crawler, DataSourceFormat.CRAWLER_MAX_PAGE_SIZE_ATTR );
-		
-		int depth = TypeConversion.stringToInt( maxdepth), 
-			count = TypeConversion.stringToInt( maxcount ),
-			size = TypeConversion.stringToInt( maxsize );
-		
-		c.setMaxDepth( depth );
-		c.setMaxPageCount( count );
-		c.setMaxPageSize( size == 0 ? 1000000 : size);
-		
-		List<Node> list = XMLParserTools.getTagsByName( crawler, DataSourceFormat.CRAWLER_URL_REGEX_ELEMENT );
-		
-		List<String> urls = new ArrayList<String>();
-		for( Node n : list ) {
-			urls.add( n.getTextContent() );
+		List<Node> crawlers = XMLParserTools.getTagsByName(access, DataSourceFormat.CRAWLER_CONFIGURATION_ELEMENT );
+		if( crawlers.size() > 0 ) {
+			maxdepth = XMLParserTools.getNodeAttrValue( crawlers.get(0), DataSourceFormat.CRAWLER_MAX_DEPTH_ATTR );
+			maxcount = XMLParserTools.getNodeAttrValue( crawlers.get(0), DataSourceFormat.CRAWLER_MAX_PAGES_ATTR );
+			maxsize = XMLParserTools.getNodeAttrValue( crawlers.get(0), DataSourceFormat.CRAWLER_MAX_PAGE_SIZE_ATTR );
+			
+			int depth = TypeConversion.stringToInt( maxdepth), 
+				count = TypeConversion.stringToInt( maxcount ),
+				size = TypeConversion.stringToInt( maxsize );
+			
+			c.setMaxDepth( depth );
+			c.setMaxPageCount( count );
+			c.setMaxPageSize( size == 0 ? 1000000 : size);
+			
+			List<Node> list = XMLParserTools.getTagsByName( crawlers.get(0), DataSourceFormat.CRAWLER_URL_REGEX_ELEMENT );
+			
+			List<String> urls = new ArrayList<String>();
+			for( Node n : list ) {
+				urls.add( n.getTextContent() );
+			}
+			c.setUrlRegexes( urls );
 		}
-		c.setUrlRegexes( urls );
 		
 		return c;
 	}
