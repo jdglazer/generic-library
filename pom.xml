@@ -3,6 +3,7 @@
   <groupId>com.jdglazer</groupId>
   <artifactId>generic-library</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
   <dependencies>
  	 <dependency>
     	<groupId>org.slf4j</groupId>
@@ -19,5 +20,10 @@
       <artifactId>crawler4j</artifactId>
       <version>4.2</version>
     </dependency>
+	<dependency>
+		<groupId>jdglazer</groupId>
+		<artifactId>parser-library</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</dependency>
   </dependencies>
 </project>

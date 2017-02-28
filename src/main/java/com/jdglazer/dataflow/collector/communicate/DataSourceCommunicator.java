@@ -1,5 +1,8 @@
 package com.jdglazer.dataflow.collector.communicate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.jdglazer.dataflow.collector.DataSource;
 import com.jdglazer.dataflow.collector.DataSource.Protocol;
 import com.jdglazer.dataflow.collector.DataSourceParserBase;
@@ -9,7 +12,6 @@ import com.jdglazer.dataflow.collector.crawlers.Crawler;
 import com.jdglazer.dataflow.collector.parser.models.ParserModelBase;
 import com.jdglazer.dataflow.collector.parser.models.ParserModelBase.Language;
 import com.jdglazer.dataflow.collector.parser.models.RegexParserModel;
-import com.jdglazer.web.crawler.WebCollector;
 import com.jdglazer.web.crawler.WebCollectorConfig;
 import com.jdglazer.web.crawler.WebCollectorParser;
 
@@ -18,6 +20,8 @@ import edu.uci.ics.crawler4j.parser.ParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
 
 public class DataSourceCommunicator {
+	
+	Logger logger = LoggerFactory.getLogger( DataSourceCommunicator.class );
 	
 	private DataSource dataSource;
 	
@@ -33,13 +37,19 @@ public class DataSourceCommunicator {
 		
 		switch( protocol ) {
 		case http:
+			;
+		case https:
 			try {
 				parserBase = createCrawler();
 			} catch (Exception e) {
-				System.out.println(e.getMessage());
+				logger.debug("Failed to build an instance of the web crawler.");
 			}
 			break;
-		case https:
+		case socket:
+			//to add code soon
+			break;
+		case ssh:
+			//to add code soon
 			break;
 		}
 	}

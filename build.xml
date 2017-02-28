@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="remote-data-collector" basedir="." default="compile">
+	<target name="compile">
+		<javac srcdir="src/main/java" destdir="src/main/java" >
+			<fileset>
+				<include name="**/*.java" />
+			</fileset>
+			<classpath>
+				<pathelement path="executable.jar.name" />
+			</classpath>
+		</javac>
+	</target>
+</project>
