@@ -1,5 +1,6 @@
 package com.jdglazer.dataflow.collector.crawlers;
 
+import java.util.ArrayList;
 import java.util.List;
 /**
  * Model class for crawler data from xml
@@ -32,6 +33,8 @@ public class Crawler {
 		this.maxPageSize = maxPageSize;
 	}
 	public List<String> getUrlRegexes() {
+		if( urlRegexes == null)
+			urlRegexes = new ArrayList<String>();
 		return urlRegexes;
 	}
 	public void setUrlRegexes(List<String> urlRegexes) {

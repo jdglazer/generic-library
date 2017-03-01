@@ -11,7 +11,6 @@ import com.jdglazer.dataflow.collector.access.HTTPAccess;
 import com.jdglazer.dataflow.collector.crawlers.Crawler;
 import com.jdglazer.dataflow.collector.parser.models.ParserModelBase;
 import com.jdglazer.dataflow.collector.parser.models.ParserModelBase.Language;
-import com.jdglazer.dataflow.collector.parser.models.RegexParserModel;
 import com.jdglazer.web.crawler.WebCollectorConfig;
 import com.jdglazer.web.crawler.WebCollectorParser;
 
@@ -65,13 +64,14 @@ public class DataSourceCommunicator {
 		
 		switch( language ) {
 		case none:
-			config.setUrlRegexes( ( (RegexParserModel) parserBase).getRegexList() );
+			
 		}
 		Crawler crawler = access.getCrawler();
 		if( crawler != null ) {
 			config.setMaxDepth( crawler.getMaxDepth() );
 			config.setMaxPages( crawler.getMaxPageCount() );
 			config.setMaxPageSize( crawler.getMaxPageSize() );
+			config.setUrlRegexes( crawler.getUrlRegexes() );
 		}
 		
 		config.setParser( new ParseIt() );
@@ -82,8 +82,9 @@ public class DataSourceCommunicator {
 	//private void 
 	
 	public void execute() {
-		if( parserBase instanceof WebCrawl )
+		if( parserBase instanceof WebCrawl ) {
 			( (WebCrawl) parserBase ).start();
+		}
 	}
 	
 	public class ParseIt implements WebCollectorParser {
@@ -92,7 +93,7 @@ public class DataSourceCommunicator {
 			if(parseData instanceof HtmlParseData) {
 				HtmlParseData data = (HtmlParseData) parseData;
 				String text = data.getText();
-				System.out.println(" "+text.length()+"  contains trump reference: "+text.toLowerCase().contains("donald trump")+" "+url.getURL());
+				System.out.println(" "+text.length()+"  contains trump reference: "+text.toLowerCase().contains("lockheed martin")+" "+url.getURL());
 			}
 			
 		}
