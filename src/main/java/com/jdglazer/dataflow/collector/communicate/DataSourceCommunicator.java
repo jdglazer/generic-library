@@ -28,7 +28,6 @@ public class DataSourceCommunicator {
 	
 	public DataSourceCommunicator( DataSource dataSource ) {
 		this.dataSource = dataSource;
-		init();
 	}
 	
 	private void init() {
@@ -82,6 +81,7 @@ public class DataSourceCommunicator {
 	//private void 
 	
 	public void execute() {
+		init();
 		if( parserBase instanceof WebCrawl ) {
 			( (WebCrawl) parserBase ).start();
 		}

@@ -78,6 +78,14 @@ public class DataSourceThreadManager {
 		
 		return false;
 	}
+	/**
+	 * Stages all threads for graceful shutdown and removal
+	 */
+	public synchronized void removeAll() {
+		for( String key: activeSources.keySet() ) {
+			removeDataSource( key );
+		}
+	}
 	
 /**
  * Cleans out the data sources staged for removal. Sleeping threads are interrupted and terminated threads are removed
@@ -100,5 +108,21 @@ public class DataSourceThreadManager {
 				i--;
 			}
 		}
+	}
+	
+	/**
+	 * Gets the number of threads registered as active threads
+	 * @return
+	 */
+	public int getActiveThreadCount() {
+		return activeSources.size();
+	}
+	
+	/**
+	 * Gets the number of threads staged for removal
+	 * @return
+	 */
+	public int getStagedForRemovalThreadCount() {
+		return sourcesToRemove.size();
 	}
 }
