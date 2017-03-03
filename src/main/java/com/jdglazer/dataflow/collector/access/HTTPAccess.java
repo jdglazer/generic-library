@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import com.jdglazer.dataflow.collector.DataSource;
-import com.jdglazer.dataflow.collector.crawlers.Crawler;
+import com.jdglazer.dataflow.collector.crawler.Crawler;
 
 public class HTTPAccess extends AccessCredentials implements Serializable {
 	

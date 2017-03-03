@@ -1,4 +1,4 @@
-package com.jdglazer.dataflow.collector.crawlers;
+package com.jdglazer.dataflow.collector.crawler;
 
 import java.util.ArrayList;
 import java.util.List;

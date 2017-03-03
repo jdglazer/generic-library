@@ -134,6 +134,12 @@ public class DataSourceFormat {
 	
 	public static final String PARSER_REGEX_ELEMENT_NAME = "regex";
 	
+	public static final String PARSER_REGEX_NAME_ATTR="name";
+	
+	public static final String PARSER_REGEX_MESSAGE_ATTR="message";
+	
+	public static final String PARSER_REGEX_VALUE_ATTR="value";
+	
 	//CRAWLER NAMES
 	
 	public static final String CRAWLER_CONFIGURATION_ELEMENT = "crawler";

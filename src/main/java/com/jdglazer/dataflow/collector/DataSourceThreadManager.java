@@ -70,8 +70,8 @@ public class DataSourceThreadManager {
 			if( ads != null) {
 				if( !ads.getThread().getState().equals(Thread.State.TERMINATED) ) {
 					ads.getDataSourceThreadHandler().stopCollecting();
-					sourcesToRemove.add( ads );
 				}
+				sourcesToRemove.add( ads );
 				return true;
 			}
 		}
@@ -82,8 +82,9 @@ public class DataSourceThreadManager {
 	 * Stages all threads for graceful shutdown and removal
 	 */
 	public synchronized void removeAll() {
-		for( String key: activeSources.keySet() ) {
-			removeDataSource( key );
+		Object [] keySet = activeSources.keySet().toArray();
+		for( Object key: keySet ) {
+			removeDataSource( (String) key );
 		}
 	}
 	

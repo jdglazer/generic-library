@@ -24,11 +24,12 @@ import com.jdglazer.dataflow.collector.access.HTTPAccess;
 import com.jdglazer.dataflow.collector.access.HTTPSAccess;
 import com.jdglazer.dataflow.collector.access.SSHAccess;
 import com.jdglazer.dataflow.collector.access.SocketAccess;
-import com.jdglazer.dataflow.collector.crawlers.Crawler;
+import com.jdglazer.dataflow.collector.crawler.Crawler;
 import com.jdglazer.dataflow.collector.parser.models.BashParserModel;
 import com.jdglazer.dataflow.collector.parser.models.JavaParserModel;
 import com.jdglazer.dataflow.collector.parser.models.ParserModelBase;
 import com.jdglazer.dataflow.collector.parser.models.ParserModelBase.Language;
+import com.jdglazer.dataflow.collector.parser.models.RegexModel;
 import com.jdglazer.dataflow.collector.parser.models.RegexParserModel;
 import com.jdglazer.dataflow.utils.communicate.TypeConversion;
 import com.jdglazer.utils.xml.XMLParser;
@@ -290,12 +291,21 @@ public class DataSourceBuilder extends XMLParser {
 	
 	private boolean populateRegexParserModel( Node parseMe, RegexParserModel rpm) {
 		List<Node> list = XMLParserTools.getTagsByName( parseMe, DataSourceFormat.PARSER_REGEX_ELEMENT_NAME );
-		List<String> regexList = new ArrayList<String>();
+		List<RegexModel> regexList = new ArrayList<RegexModel>();
 		for( Node regex : list ) {
-			String r = regex.getTextContent().trim();
-			if( r != null ) {
-				regexList.add( r );
+			RegexModel regexModel = new RegexModel();
+			
+			String name = XMLParserTools.getNodeAttrValue( regex, DataSourceFormat.PARSER_REGEX_ELEMENT_NAME ),
+				   message = XMLParserTools.getNodeAttrValue( regex, DataSourceFormat.PARSER_REGEX_MESSAGE_ATTR ),
+				   value = XMLParserTools.getNodeAttrValue( regex, DataSourceFormat.PARSER_REGEX_VALUE_ATTR );
+			
+			if( name == null || value == null ) {
+				return false;
 			}
+			regexModel.setName( name );
+			regexModel.setMessage( message );
+			regexModel.setRegex( value );
+			regexList.add( regexModel );
 		}
 		return true;
 	}

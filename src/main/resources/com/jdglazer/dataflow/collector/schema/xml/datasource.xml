@@ -38,5 +38,6 @@ updateInterval - The interval between subsequent updates in seconds
 	<!--  The way it needs to be parsed. The data path element (or attribute) will need to be present no matter what type of parser is used -->
 		<script path="/path/to/parsing/script"/>
 		<datapath>/path/to/datafile</datapath>
+		<regex name="lockheed_growth" message="Lockheed Martin is adding jobs" value="lockheed martin"/>
 	</parser>
 </datasource>

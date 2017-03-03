@@ -8,9 +8,11 @@ import com.jdglazer.dataflow.collector.DataSource.Protocol;
 import com.jdglazer.dataflow.collector.DataSourceParserBase;
 import com.jdglazer.dataflow.collector.WebCrawl;
 import com.jdglazer.dataflow.collector.access.HTTPAccess;
-import com.jdglazer.dataflow.collector.crawlers.Crawler;
+import com.jdglazer.dataflow.collector.crawler.Crawler;
+import com.jdglazer.dataflow.collector.crawler.parsers.CrawlerRegexParser;
 import com.jdglazer.dataflow.collector.parser.models.ParserModelBase;
 import com.jdglazer.dataflow.collector.parser.models.ParserModelBase.Language;
+import com.jdglazer.dataflow.collector.parser.models.RegexParserModel;
 import com.jdglazer.web.crawler.WebCollectorConfig;
 import com.jdglazer.web.crawler.WebCollectorParser;
 
@@ -63,7 +65,17 @@ public class DataSourceCommunicator {
 		
 		switch( language ) {
 		case none:
-			
+			if( parserBase instanceof RegexParserModel ) {
+				CrawlerRegexParser regexParser = new CrawlerRegexParser( 
+						( (RegexParserModel) parserBase ).getRegexList() );
+				config.setParser( regexParser );
+			}
+		case bash:
+			break;
+		case java:
+			break;
+		default:
+			break;
 		}
 		Crawler crawler = access.getCrawler();
 		if( crawler != null ) {
@@ -73,7 +85,7 @@ public class DataSourceCommunicator {
 			config.setUrlRegexes( crawler.getUrlRegexes() );
 		}
 		
-		config.setParser( new ParseIt() );
+		
 		WebCrawl webCrawl = new WebCrawl( config );
 		return webCrawl;
 	}

@@ -4,14 +4,14 @@ import java.util.List;
 
 public class RegexParserModel extends ParserModelBase {
 	
-	private List<String> regexList;
+	private List<RegexModel> regexList;
 
-	public List<String> getRegexList() {
+	public List<RegexModel> getRegexList() {
 		return regexList;
 	}
 
-	public void setRegexList(List<String> regexList) {
+	public void setRegexList(List<RegexModel> regexList) {
 		this.regexList = regexList;
 	}
-	
+
 }
