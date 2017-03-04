@@ -15,6 +15,8 @@ class DataSourceThreadHandler implements Runnable {
 	
 	private boolean running;
 	
+	private static int collectionId = 0;
+	
 	public DataSourceThreadHandler( DataSource datasource ) {
 		this.datasource = datasource;
 		this.dataSourceCommunicator = new DataSourceCommunicator( datasource );
@@ -23,10 +25,11 @@ class DataSourceThreadHandler implements Runnable {
 	
 	public void run() {
 		while( running ) {
+			collectionId++;
 			//Code to perform data collection
 			Date d = new Date( System.currentTimeMillis() );
 			System.out.println(  ""+d.getHours()+":"+d.getMinutes()+":"+(d.getSeconds() <10 ? "0":"" )+d.getSeconds()+"  Running collection for data source: " + datasource.getName() );
-			dataSourceCommunicator.execute();
+			dataSourceCommunicator.execute(collectionId);
 			try {
 				Thread.sleep( (long) datasource.getUpdateInterval() * 1000l );
 			} catch (InterruptedException e) {

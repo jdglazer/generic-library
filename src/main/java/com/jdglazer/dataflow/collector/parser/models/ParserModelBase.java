@@ -17,7 +17,7 @@ public class ParserModelBase implements Serializable {
 	private String parserFilePath;
 	
 	public enum Language implements Serializable {
-		java, bash, none
+		java, bash, none, regex
 	}
 
 	public Language getLanguage() {

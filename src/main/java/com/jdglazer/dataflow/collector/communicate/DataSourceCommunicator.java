@@ -32,7 +32,7 @@ public class DataSourceCommunicator {
 		this.dataSource = dataSource;
 	}
 	
-	private void init() {
+	private void init( int collectionId ) {
 		Protocol protocol = dataSource.getAccess().getProtocol();
 		
 		switch( protocol ) {
@@ -64,10 +64,11 @@ public class DataSourceCommunicator {
 		config.setStorageFolder( parserBase.getOutputFileDirectory() );
 		
 		switch( language ) {
-		case none:
+		case regex:
 			if( parserBase instanceof RegexParserModel ) {
 				CrawlerRegexParser regexParser = new CrawlerRegexParser( 
-						( (RegexParserModel) parserBase ).getRegexList() );
+						( (RegexParserModel) parserBase ).getRegexList(), 
+						parserBase.getOutputFileDirectory() );
 				config.setParser( regexParser );
 			}
 		case bash:
@@ -92,23 +93,10 @@ public class DataSourceCommunicator {
 	
 	//private void 
 	
-	public void execute() {
-		init();
+	public void execute(int collectionId) {
+		init(collectionId);
 		if( parserBase instanceof WebCrawl ) {
 			( (WebCrawl) parserBase ).start();
 		}
-	}
-	
-	public class ParseIt implements WebCollectorParser {
-
-		public void parseCrawlerData(String contentType, WebURL url, ParseData parseData) {
-			if(parseData instanceof HtmlParseData) {
-				HtmlParseData data = (HtmlParseData) parseData;
-				String text = data.getText();
-				System.out.println(" "+text.length()+"  contains trump reference: "+text.toLowerCase().contains("lockheed martin")+" "+url.getURL());
-			}
-			
-		}
-		
 	}
 } 
