@@ -9,6 +9,8 @@ import com.jdglazer.dataflow.collector.parser.models.ParserModelBase;
 public class DataSource implements Serializable {
 
 	private static final long serialVersionUID = 1543980989675665607L;
+	
+	private String xmlSha;
 
 	//in milliseconds
 	private int updateInterval;
@@ -53,6 +55,22 @@ public class DataSource implements Serializable {
 		this.datasourceParser = datasourceParser;
 	}
 	
+	public ArrayList<short[]> getAliveIntervals() {
+		return aliveIntervals;
+	}
+
+	public void setAliveIntervals(ArrayList<short[]> aliveIntervals) {
+		this.aliveIntervals = aliveIntervals;
+	}
+
+	public String getXmlSha() {
+		return xmlSha;
+	}
+
+	public void setXmlSha(String xmlSha) {
+		this.xmlSha = xmlSha;
+	}
+	
 	public enum Protocol implements Serializable {
 		http, https, ssh, socket
 	}
@@ -65,11 +83,4 @@ public class DataSource implements Serializable {
 		return ds.getUpdateInterval() == this.updateInterval && ds.getDatasourceParser().equals( this.datasourceParser ) && ds.getName().equals(this.name) && ds.getAccess().equals( this.access );
 	}
 
-	public ArrayList<short[]> getAliveIntervals() {
-		return aliveIntervals;
-	}
-
-	public void setAliveIntervals(ArrayList<short[]> aliveIntervals) {
-		this.aliveIntervals = aliveIntervals;
-	}
 }

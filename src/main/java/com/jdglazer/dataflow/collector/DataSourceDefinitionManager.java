@@ -24,17 +24,58 @@ import org.xml.sax.SAXException;
 
 public class DataSourceDefinitionManager {
 	
-	static Logger logger = LoggerFactory.getLogger( DataSourceDefinitionManager.class );
+	//variables use to mark a specific data source as a newly added data source or a data source to remove
+	public static final int ADD = 1;
+	
+	public static final int REMOVE = 2;
+	
+	
+	protected static Logger logger = LoggerFactory.getLogger( DataSourceDefinitionManager.class );
 	
 	private static ArrayList<File> DATA_SOURCE_FILE_FOLDERS = new ArrayList<File>();
+	
+	/**
+	 * A data source hash map of data source last found with the value being the location of the data source in the xml files
+	 */
+	private static Map<String, DataSourceLocation> lastFoundDataSources = new HashMap<String, DataSourceLocation>();
 		
 	/**
 	 * Folder in which serialized data source objects are stored
 	 */
 	private static String SERIALIZED_DATA_SOURCES_FOLDER;
-		
+	/**
+	 * Gets all data sources from xml files in the data source definition folder
+	 * @return All data source names mapped to their respective data source objects
+	 */
 	public static Map<String, DataSource> getDefinedDataSources() {
 		return parseXMLFiles( getXMLFiles() );
+	}
+	
+	/**
+	 * Determines a list of edited, removed, and/or added data sources since last sweep of data source definition files
+	 */
+	public static void /* Map<String, Integer> ( a map to return sha assoiated with ADD or REMOVE static variable) */ getEdittedDataSources() {
+/*********************
+ * Next place where work will begin.
+ **********************/
+	}
+	
+	/** 
+	 * A helper function that registers the location of all found data sources under an sha-256 key.
+	 * This function is designed to help determine which data sources have been newly added, removed, and/or edited
+	 * @return A map of Data source definition locations in the file system associated to sha-256 keys
+	 */
+	private static Map<String, DataSourceLocation> getDataSourceUpdateList() {
+		List<File> files = getXMLFiles();
+		Map<String, DataSourceLocation> dsLocations = new HashMap<String, DataSourceLocation>();
+		for( File file : files ) {
+			try {
+				DataSourceBuilder builder = new DataSourceBuilder( file );
+				dsLocations.putAll( builder.getDataSourceShaList() );
+			} catch ( Exception e ) {
+			}
+		}
+		return dsLocations;
 	}
 		
 	private static List<File> getXMLFiles() {
@@ -72,5 +113,22 @@ public class DataSourceDefinitionManager {
 	
 	public static void addDatasourceFolder( String folder ) {
 		DATA_SOURCE_FILE_FOLDERS.add( new File( folder ) );
+	}
+	
+	/**
+	 * A helper class designed to store a value that directs the user to the location
+	 * of a data source (the file, and the index in the set of data sources in the file)
+	 * @author jglazer
+	 *
+	 */
+	public static class DataSourceLocation {
+		
+		public File file;
+		public int positionInFile;
+		
+		DataSourceLocation( File file, int positionInFile ) {
+			this.file = file;
+			this.positionInFile = positionInFile;
+		}
 	}
 }

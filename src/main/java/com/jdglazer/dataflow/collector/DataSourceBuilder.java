@@ -19,6 +19,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import com.jdglazer.dataflow.collector.DataSourceDefinitionManager.DataSourceLocation;
 import com.jdglazer.dataflow.collector.access.AccessCredentials;
 import com.jdglazer.dataflow.collector.access.HTTPAccess;
 import com.jdglazer.dataflow.collector.access.HTTPSAccess;
@@ -32,6 +33,7 @@ import com.jdglazer.dataflow.collector.parser.models.ParserModelBase.Language;
 import com.jdglazer.dataflow.collector.parser.models.RegexModel;
 import com.jdglazer.dataflow.collector.parser.models.RegexParserModel;
 import com.jdglazer.dataflow.utils.communicate.TypeConversion;
+import com.jdglazer.utils.CheckSumCalculator;
 import com.jdglazer.utils.xml.XMLParser;
 import com.jdglazer.utils.xml.XMLParserTools;
 
@@ -70,7 +72,7 @@ public class DataSourceBuilder extends XMLParser {
 	 */
 	public Map<String, DataSource> build() {
 		if( getData() ) {
-			System.out.println("DataSource build of "+datasource+" succeeded!");
+			logger.debug("DataSource build of "+datasource+" succeeded!");
 		};
 		return parsedOutDataSources;
 	}
@@ -81,75 +83,15 @@ public class DataSourceBuilder extends XMLParser {
 	 */
 	private boolean getData() {
 		
-		List<Node> list = this.getTagsByName(DataSourceFormat.ROOT_ELEMENT_NAME);
+		List<Node> list =  this.getTagsByName( DataSourceFormat.ROOT_ELEMENT_NAME );
 		boolean foundDataSources = false;
-		
+		DataSource dataSource = null;
 		if( list.size() > 0 ) {
 			for( Node root : list ) {
-				NamedNodeMap nm = root.getAttributes();
-				if( nm != null ) {
-					Node name = nm.getNamedItem(DataSourceFormat.DATA_SOURCE_NAME_ATTR),
-						 updateInterval = nm.getNamedItem(DataSourceFormat.DATA_SOURCE_UPDATE_INTERVAL_ATTR),
-						 activeTime = nm.getNamedItem( DataSourceFormat.DATA_SOURCE_ACTIVE_INTERVAL_ATTR );
-					if( name != null && updateInterval != null ) {
-						
-						String datasource_name = name.getTextContent().trim();
-						DataSource dataSource = new DataSource();
-						int datasource_ui = 0;
-						try {
-							datasource_ui = Integer.parseInt( updateInterval.getTextContent() );
-						}
-						catch ( Exception e ) {
-							logger.debug("Invalid string found for updateInterval in "+datasource);
-						}
-						
-						if( datasource_name.length() > 0 )
-							dataSource.setName( datasource_name );
-						else {
-							logger.debug("Null data source name is not allowed. File: "+datasource );
-							dataSource = null;
-							continue;
-						}
-						
-						dataSource.setUpdateInterval(
-						  datasource_ui >= DataSourceFormat.MINIMUM_ALLOWED_UPDATE_INTERVAL
-							? datasource_ui
-							: DataSourceFormat.DEFAULT_UPDATE_INTERVAL
-						);
-						
-						AccessCredentials accessCredentials = getAccessCredentials( root );
-						if( accessCredentials == null ) {
-							logger.debug( "Invalid access credentials detected for data source of name: "+name+" in file: "+datasource);
-							continue;
-						}
-						
-						ParserModelBase parser = getParser( root );
-						if( parser == null ) {
-							logger.debug( "Invalid parser detected for data source of name "+name+" in file: "+datasource);
-							continue;
-						}
-						
-						//set the parser 
-						ArrayList<short[]> ints = DataSourceAttrValueParser
-									.parserUpdateAliveInterval( activeTime != null 
-																	? activeTime.getTextContent() 
-																	: DataSourceFormat.ACTIVE_INTERVAL_DEFAULT 
-															  );
-						
-						dataSource.setAliveIntervals( ints );
-						dataSource.setDatasourceParser( parser );
-						dataSource.setAccess( accessCredentials );
-						parsedOutDataSources.put( datasource_name, dataSource );
-						foundDataSources = true;
-					}
-					else {
-						logger.debug("Must set both name and update interval in root datesource tag. File: "+datasource);
-						continue;
-					}
-				}
-				else {
-					logger.debug("Data source defined at "+datasource+" has no attributes.");
-					continue;
+				dataSource = parseDataSource( root );
+				if( dataSource != null ) {
+					parsedOutDataSources.put( dataSource.getName(), dataSource );
+					foundDataSources = true;
 				}
 			}
 		} else {
@@ -159,6 +101,95 @@ public class DataSourceBuilder extends XMLParser {
 		return foundDataSources;
 	}
 	
+	/**
+	 * Primary function that converts a data source node to a DataSource object
+	 * @param root The data source node
+	 * @return DataSource mode of data source node
+	 */
+	public DataSource parseDataSource( Node root ) {
+		NamedNodeMap nm = root.getAttributes();
+		if( nm != null ) {
+			Node name = nm.getNamedItem(DataSourceFormat.DATA_SOURCE_NAME_ATTR),
+				 updateInterval = nm.getNamedItem(DataSourceFormat.DATA_SOURCE_UPDATE_INTERVAL_ATTR),
+				 activeTime = nm.getNamedItem( DataSourceFormat.DATA_SOURCE_ACTIVE_INTERVAL_ATTR );
+			if( name != null && updateInterval != null ) {
+				
+				String datasource_name = name.getTextContent().trim();
+				DataSource dataSource = new DataSource();
+				//setting sha string for data source ( this value allows us to determine when definition xml has been changed )
+				dataSource.setXmlSha( CheckSumCalculator.sha256( XMLParserTools.getNodeAsString( root ) ) );
+				
+				int datasource_ui = 0;
+				try {
+					datasource_ui = Integer.parseInt( updateInterval.getTextContent() );
+				}
+				catch ( Exception e ) {
+					logger.debug("Invalid string found for updateInterval in "+datasource);
+				}
+				
+				if( datasource_name.length() > 0 )
+					dataSource.setName( datasource_name );
+				else {
+					logger.debug("Null data source name is not allowed. File: "+datasource );
+					dataSource = null;
+					return null;
+				}
+				
+				dataSource.setUpdateInterval(
+				  datasource_ui >= DataSourceFormat.MINIMUM_ALLOWED_UPDATE_INTERVAL
+					? datasource_ui
+					: DataSourceFormat.DEFAULT_UPDATE_INTERVAL
+				);
+				
+				AccessCredentials accessCredentials = getAccessCredentials( root );
+				if( accessCredentials == null ) {
+					logger.debug( "Invalid access credentials detected for data source of name: "+name+" in file: "+datasource);
+					return null;
+				}
+				
+				ParserModelBase parser = getParser( root );
+				if( parser == null ) {
+					logger.debug( "Invalid parser detected for data source of name "+name+" in file: "+datasource);
+					return null;
+				}
+				
+				//set the parser 
+				ArrayList<short[]> ints = DataSourceAttrValueParser
+							.parserUpdateAliveInterval( activeTime != null 
+															? activeTime.getTextContent() 
+															: DataSourceFormat.ACTIVE_INTERVAL_DEFAULT 
+													  );
+				
+				dataSource.setAliveIntervals( ints );
+				dataSource.setDatasourceParser( parser );
+				dataSource.setAccess( accessCredentials );
+	
+				return dataSource;
+			}
+			else {
+				logger.debug("Must set both name and update interval in root datesource tag. File: "+datasource);
+			}
+		}
+		else {
+			logger.debug("Data source defined at "+datasource+" has no attributes.");
+		}
+		return null;
+	}
+	
+	/**
+	 * Maps all data sources by xml string sha-256 hash to data source location information in the form of files.
+	 * @return
+	 */
+	public Map<String, DataSourceLocation> getDataSourceShaList() {
+		 List<Node> list = this.getTagsByName( DataSourceFormat.ROOT_ELEMENT_NAME );
+		 Map<String, DataSourceLocation> dsLocation = new HashMap<String, DataSourceLocation>();
+		 for( int i = 0; i < list.size(); i++ ) {
+			String sha = CheckSumCalculator.sha256( XMLParserTools.getNodeAsString( list.get(0) ) );
+			DataSourceLocation dsLoc = new DataSourceLocation( datasource, i );
+			dsLocation.put( sha, dsLoc );
+		 }
+		 return dsLocation;
+	}
 	/**
 	 * 
 	 */
