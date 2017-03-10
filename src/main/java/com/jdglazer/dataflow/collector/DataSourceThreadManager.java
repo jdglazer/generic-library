@@ -5,9 +5,9 @@
 
 package com.jdglazer.dataflow.collector;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,6 +77,34 @@ public class DataSourceThreadManager {
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * 
+	 * @param shaHash
+	 * @return
+	 */
+	public synchronized boolean removeDataSourceBySha( String shaHash ) {
+		DataSource ds = getDataSourceBySha( shaHash );
+		if( ds != null ) {
+			return removeDataSource( ds.getName() );
+		}
+		return false;
+	}
+	
+	/**
+	 * Gets a data source by the associated sha-256 hash
+	 * @param sha An sha-256 hash as hex string
+	 * @return A data source object
+	 */
+	private DataSource getDataSourceBySha( String sha ) {
+		for( Entry<String, ActiveDataSource> entry : activeSources.entrySet() ) {
+			DataSource dataSource = entry.getValue().getDataSourceThreadHandler().getDataSource();
+			if( dataSource.getXmlSha().equals(sha) ) {
+				return dataSource;
+			}
+		}
+		return null;
 	}
 	/**
 	 * Stages all threads for graceful shutdown and removal

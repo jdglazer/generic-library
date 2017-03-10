@@ -1,5 +1,6 @@
 package com.jdglazer.dataflow.collector;
 
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -44,14 +45,27 @@ public class Main {
 						} catch( Exception e ) {}
 					}
 					gracefullyStopped = true;
-				}				
+				} else {
+					dataSourceThreadManager.cleanSourcesToRemove();
+					Map<String, Object> changedSources = DataSourceDefinitionManager.updateEdittedDataSources();
+					for( Entry<String, Object> entry : changedSources.entrySet() ) {
+						if( entry.getValue() instanceof DataSource ) {
+							System.out.println("Adding new data source");
+							dataSourceThreadManager.addDataSource( (DataSource) entry.getValue() );
+						}
+						else {
+							System.out.println("Removing an old data source");
+							dataSourceThreadManager.removeDataSourceBySha( entry.getKey() );
+						}
+					}
+				}
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 			}
 		}
 	}
 	
-	public static synchronized void stop() {
+	public static void stop() {
 		running = false;
 	}
 	

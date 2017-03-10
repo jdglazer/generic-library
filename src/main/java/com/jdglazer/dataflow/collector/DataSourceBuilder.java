@@ -19,7 +19,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import com.jdglazer.dataflow.collector.DataSourceDefinitionManager.DataSourceLocation;
 import com.jdglazer.dataflow.collector.access.AccessCredentials;
 import com.jdglazer.dataflow.collector.access.HTTPAccess;
 import com.jdglazer.dataflow.collector.access.HTTPSAccess;
@@ -39,7 +38,7 @@ import com.jdglazer.utils.xml.XMLParserTools;
 
 public class DataSourceBuilder extends XMLParser {
 	
-	Logger logger = LoggerFactory.getLogger( DataSourceBuilder.class );
+	static Logger logger = LoggerFactory.getLogger( DataSourceBuilder.class );
 	
 	/**
 	 * stores the datasource xml file
@@ -106,7 +105,7 @@ public class DataSourceBuilder extends XMLParser {
 	 * @param root The data source node
 	 * @return DataSource mode of data source node
 	 */
-	public DataSource parseDataSource( Node root ) {
+	public static DataSource parseDataSource( Node root ) {
 		NamedNodeMap nm = root.getAttributes();
 		if( nm != null ) {
 			Node name = nm.getNamedItem(DataSourceFormat.DATA_SOURCE_NAME_ATTR),
@@ -124,13 +123,13 @@ public class DataSourceBuilder extends XMLParser {
 					datasource_ui = Integer.parseInt( updateInterval.getTextContent() );
 				}
 				catch ( Exception e ) {
-					logger.debug("Invalid string found for updateInterval in "+datasource);
+					logger.debug("Invalid string found for updateInterval in "+datasource_name);
 				}
 				
 				if( datasource_name.length() > 0 )
 					dataSource.setName( datasource_name );
 				else {
-					logger.debug("Null data source name is not allowed. File: "+datasource );
+					logger.debug("Null data source name is not allowed. File: "+datasource_name );
 					dataSource = null;
 					return null;
 				}
@@ -143,13 +142,13 @@ public class DataSourceBuilder extends XMLParser {
 				
 				AccessCredentials accessCredentials = getAccessCredentials( root );
 				if( accessCredentials == null ) {
-					logger.debug( "Invalid access credentials detected for data source of name: "+name+" in file: "+datasource);
+					logger.debug( "Invalid access credentials detected for data source of name: "+name+" in file: "+datasource_name);
 					return null;
 				}
 				
 				ParserModelBase parser = getParser( root );
 				if( parser == null ) {
-					logger.debug( "Invalid parser detected for data source of name "+name+" in file: "+datasource);
+					logger.debug( "Invalid parser detected for data source of name "+name+" in file: "+datasource_name);
 					return null;
 				}
 				
@@ -163,15 +162,16 @@ public class DataSourceBuilder extends XMLParser {
 				dataSource.setAliveIntervals( ints );
 				dataSource.setDatasourceParser( parser );
 				dataSource.setAccess( accessCredentials );
+				
 	
 				return dataSource;
 			}
 			else {
-				logger.debug("Must set both name and update interval in root datesource tag. File: "+datasource);
+				logger.debug("Must set both name and update interval in root datesource tag.");
 			}
 		}
 		else {
-			logger.debug("Data source defined at "+datasource+" has no attributes.");
+			logger.debug("Data source has no attributes.");
 		}
 		return null;
 	}
@@ -180,20 +180,19 @@ public class DataSourceBuilder extends XMLParser {
 	 * Maps all data sources by xml string sha-256 hash to data source location information in the form of files.
 	 * @return
 	 */
-	public Map<String, DataSourceLocation> getDataSourceShaList() {
+	public Map<String, Node> getDataSourceShaList() {
 		 List<Node> list = this.getTagsByName( DataSourceFormat.ROOT_ELEMENT_NAME );
-		 Map<String, DataSourceLocation> dsLocation = new HashMap<String, DataSourceLocation>();
+		 Map<String, Node> dsLocation = new HashMap<String, Node>();
 		 for( int i = 0; i < list.size(); i++ ) {
-			String sha = CheckSumCalculator.sha256( XMLParserTools.getNodeAsString( list.get(0) ) );
-			DataSourceLocation dsLoc = new DataSourceLocation( datasource, i );
-			dsLocation.put( sha, dsLoc );
+			String sha = CheckSumCalculator.sha256( XMLParserTools.getNodeAsString( list.get(i) ) );
+			dsLocation.put( sha, list.get(i) );
 		 }
 		 return dsLocation;
 	}
 	/**
 	 * 
 	 */
-	private AccessCredentials getAccessCredentials( Node dataSource ) {
+	private static AccessCredentials getAccessCredentials( Node dataSource ) {
 		AccessCredentials accessCredentials = null;
 		
 		List<Node> nl = XMLParserTools.getTagsByName( dataSource,  DataSourceFormat.CREDENTIAL_PROVIDER_NAME );
@@ -226,23 +225,23 @@ public class DataSourceBuilder extends XMLParser {
 							break;
 						}
 					} catch ( Exception e ) {
-						logger.debug( "Invalid protocol provided to data source access in file: "+datasource );
+						logger.debug( "Invalid protocol provided to data source access." );
 					}
 				} else {
-					logger.debug( "No protocol registered with data source access credentials in file "+datasource);
+					logger.debug( "No protocol registered with data source access credentials in file." );
 					return null;
 				}
 			}
 
 		} else {
-			logger.debug("No access credentials found for datasource in file "+datasource);
+			logger.debug("No access credentials found for datasource in file." );
 			return null;
 		}
 		
 		return accessCredentials;		
 	}
 	
-	private ParserModelBase getParser( Node datasource ) {
+	private static ParserModelBase getParser( Node datasource ) {
 		ParserModelBase parserModel = null;
 		List<Node> nl = XMLParserTools.getTagsByName( datasource, DataSourceFormat.PARSER_CLASS_ELEMENT_NAME );
 		if( nl.size() > 0 ) {
@@ -290,7 +289,7 @@ public class DataSourceBuilder extends XMLParser {
 		return parserModel;
 	}
 	
-	private boolean populateJavaParserModel( Node parser, JavaParserModel jpm ) {
+	private static boolean populateJavaParserModel( Node parser, JavaParserModel jpm ) {
 		List<Node> list = XMLParserTools.getTagsByName( parser, DataSourceFormat.JAVA_PARSER_CLASS_ELEMENT_NAME );
 		if( list.size() > 0 ) {
 			Node classTag = list.get(0);
@@ -303,7 +302,7 @@ public class DataSourceBuilder extends XMLParser {
 		return true;
 	}
 	
-	private boolean populateBashParserModel( Node parser, BashParserModel bpm ) {
+	private static boolean populateBashParserModel( Node parser, BashParserModel bpm ) {
 		List<Node> list = XMLParserTools.getTagsByName( parser, DataSourceFormat.PARSER_SCRIPT_ELEMENT_NAME);
 		Node script = null;
 		String path = null, datapath = null;
@@ -320,7 +319,7 @@ public class DataSourceBuilder extends XMLParser {
 		return ( script != null && path != null && datapath != null );
 	}
 	
-	private boolean populateRegexParserModel( Node parseMe, RegexParserModel rpm) {
+	private static boolean populateRegexParserModel( Node parseMe, RegexParserModel rpm) {
 		List<Node> list = XMLParserTools.getTagsByName( parseMe, DataSourceFormat.PARSER_REGEX_ELEMENT_NAME );
 		List<RegexModel> regexList = new ArrayList<RegexModel>();
 		for( Node regex : list ) {
@@ -341,7 +340,7 @@ public class DataSourceBuilder extends XMLParser {
 		return true;
 	}
 	
-	private boolean populateHttpAccess( Node accessNode, HTTPAccess obj ) {
+	private static boolean populateHttpAccess( Node accessNode, HTTPAccess obj ) {
 		String address = null;
 		Map<String, String> getList = null, postList = null;
 		if ( accessNode != null ) {
@@ -368,7 +367,7 @@ public class DataSourceBuilder extends XMLParser {
 		return (address != null);
 	}
 	
-	private boolean populateSshAccess( Node accessNode, SSHAccess access ) {
+	private static boolean populateSshAccess( Node accessNode, SSHAccess access ) {
 		String user = null, ip = null, password = null;
 		if( accessNode != null ) {
 			//true when elements are found
@@ -393,7 +392,7 @@ public class DataSourceBuilder extends XMLParser {
 		return (user != null && ip != null && password != null);
 	}
 	
-	private boolean populateSocketAccess( Node accessNode, SocketAccess access ) {
+	private static boolean populateSocketAccess( Node accessNode, SocketAccess access ) {
 		short port = -1;
 		String ip = null;
 		
@@ -420,7 +419,7 @@ public class DataSourceBuilder extends XMLParser {
 		return ( port > 0 && ip != null );
 	}
 	
-	public Crawler parseCrawler( Node access ) {
+	public static Crawler parseCrawler( Node access ) {
 		Crawler c = new Crawler();
 		String maxcount, maxsize, maxdepth;
 		List<Node> crawlers = XMLParserTools.getTagsByName(access, DataSourceFormat.CRAWLER_CONFIGURATION_ELEMENT );
@@ -449,7 +448,7 @@ public class DataSourceBuilder extends XMLParser {
 		return c;
 	}
 	
-	private Map<String, String> parseVarList( Node listRoot ) {
+	private static Map<String, String> parseVarList( Node listRoot ) {
 		Map<String, String> varMap = new HashMap<String,String>();
 		List<Node> nodeList = XMLParserTools.getTagsByName( listRoot, DataSourceFormat.LIST_ELEMENT_ELEMENT_NAME );
 		
