@@ -1,7 +1,7 @@
 package com.jdglazer.dataflow.collector.test;
-import com.jdglazer.dataflow.collector.DataSourceParserBase;
+import com.jdglazer.dataflow.collector.communicate.CommunicatorBase;
 
-public class DataSourceParserBaseTest implements DataSourceParserBase {
+public class DataSourceParserBaseTest implements CommunicatorBase {
 
 	public boolean rawDataIn(byte [] input) {
 		

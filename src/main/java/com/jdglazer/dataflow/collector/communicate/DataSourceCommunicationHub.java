@@ -5,8 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import com.jdglazer.dataflow.collector.DataSource;
 import com.jdglazer.dataflow.collector.DataSource.Protocol;
-import com.jdglazer.dataflow.collector.DataSourceParserBase;
-import com.jdglazer.dataflow.collector.WebCrawl;
 import com.jdglazer.dataflow.collector.access.HTTPAccess;
 import com.jdglazer.dataflow.collector.crawler.Crawler;
 import com.jdglazer.dataflow.collector.crawler.parsers.CrawlerRegexParser;
@@ -20,15 +18,15 @@ import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.parser.ParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
 
-public class DataSourceCommunicator {
+public class DataSourceCommunicationHub {
 	
-	Logger logger = LoggerFactory.getLogger( DataSourceCommunicator.class );
+	Logger logger = LoggerFactory.getLogger( DataSourceCommunicationHub.class );
 	
 	private DataSource dataSource;
 	
-	private DataSourceParserBase parserBase;
+	private CommunicatorBase parserBase;
 	
-	public DataSourceCommunicator( DataSource dataSource ) {
+	public DataSourceCommunicationHub( DataSource dataSource ) {
 		this.dataSource = dataSource;
 	}
 	
@@ -54,7 +52,7 @@ public class DataSourceCommunicator {
 		}
 	}
 	
-	private WebCrawl createCrawler() throws Exception {
+	private WebCrawlCommunicator createCrawler() throws Exception {
 		WebCollectorConfig config;
 		HTTPAccess access = (HTTPAccess) dataSource.getAccess();
 		ParserModelBase parserBase = dataSource.getDatasourceParser();
@@ -87,7 +85,7 @@ public class DataSourceCommunicator {
 		}
 		
 		
-		WebCrawl webCrawl = new WebCrawl( config );
+		WebCrawlCommunicator webCrawl = new WebCrawlCommunicator( config );
 		return webCrawl;
 	}
 	
@@ -95,8 +93,8 @@ public class DataSourceCommunicator {
 	
 	public void execute(int collectionId) {
 		init(collectionId);
-		if( parserBase instanceof WebCrawl ) {
-			( (WebCrawl) parserBase ).start();
+		if( parserBase instanceof WebCrawlCommunicator ) {
+			( (WebCrawlCommunicator) parserBase ).start();
 		}
 	}
 } 

@@ -5,13 +5,13 @@ package com.jdglazer.dataflow.collector;
 
 import java.util.Date;
 
-import com.jdglazer.dataflow.collector.communicate.DataSourceCommunicator;
+import com.jdglazer.dataflow.collector.communicate.DataSourceCommunicationHub;
 
 class DataSourceThreadHandler implements Runnable {
 	
 	private DataSource datasource;	
 	
-	private DataSourceCommunicator dataSourceCommunicator;
+	private DataSourceCommunicationHub dataSourceCommunicator;
 	
 	private boolean running;
 	
@@ -19,17 +19,23 @@ class DataSourceThreadHandler implements Runnable {
 	
 	public DataSourceThreadHandler( DataSource datasource ) {
 		this.datasource = datasource;
-		this.dataSourceCommunicator = new DataSourceCommunicator( datasource );
+		this.dataSourceCommunicator = new DataSourceCommunicationHub( datasource );
 		this.running = false;
 	}
 	
 	public void run() {
 		while( running ) {
-			collectionId++;
-			//Code to perform data collection
 			Date d = new Date( System.currentTimeMillis() );
-			System.out.println(  ""+d.getHours()+":"+d.getMinutes()+":"+(d.getSeconds() <10 ? "0":"" )+d.getSeconds()+"  Running collection for data source: " + datasource.getName() );
-			dataSourceCommunicator.execute(collectionId);
+			short hourOfWeek = (short) (d.getDay()*24 + d.getHours() );
+			if( hourOfWeek >= datasource.getAliveIntervals().get(0)[0] 
+					&& hourOfWeek <= datasource.getAliveIntervals().get(0)[1]) {
+				collectionId++;
+				//Code to perform data collection
+				System.out.println(  ""+d.getHours()+":"+d.getMinutes()+":"+(d.getSeconds() <10 ? "0":"" )+d.getSeconds()+"  Running collection for data source: " + datasource.getName() );
+				dataSourceCommunicator.execute(collectionId);
+			} else {
+				
+			}
 			try {
 				Thread.sleep( (long) datasource.getUpdateInterval() * 1000l );
 			} catch (InterruptedException e) {

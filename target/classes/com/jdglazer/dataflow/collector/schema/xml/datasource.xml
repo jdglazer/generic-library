@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+name - the primary identifier
+activeTime - the hours in the week in-between which the collector will be active
+	eg. 24-96,120-144 is Monday-Wednesday,Friday
+	default is the entire week (0-168)
+updateInterval - The interval between subsequent updates in seconds
+ -->
+<datasource name="" activeTime="24-96,120-144" updateInterval="">
+	<access protocol="http|https|ssh|socket">
+		<address></address>
+		<crawler maxdepth="int" maxpagecount="int" maxpagesize="int">
+			<urlregex></urlregex>
+		</crawler>
+		<getlist>
+			<element>key:value</element>
+			<element>Key:value</element>
+		</getlist>
+		<postlist>
+			<element>key:value</element>
+			<element>Key:value</element>
+		</postlist>
+		<user></user>
+		<password></password>
+		<ip></ip>
+		<port></port>
+		<key></key>
+	</access>
+	<parser lang="java|bash|perl|none">
+	<!--  For a java class we pass in the raw input as a byte stream -->
+		<class></class>
+	<!-- For a script, we create a temporary file for the data and pass the path of the file to the script -->
+	<!--  The way it is parsed now  -->
+		<script>
+		    <path>/path/to/parsing/script</path>
+			<datapath>/path/to/datafile</datapath>
+		</script>
+	<!--  The way it needs to be parsed. The data path element (or attribute) will need to be present no matter what type of parser is used -->
+		<script path="/path/to/parsing/script"/>
+		<datapath>/path/to/datafile</datapath>
+		<regex name="lockheed_growth" message="Lockheed Martin is adding jobs" value="lockheed martin"/>
+	</parser>
+</datasource>

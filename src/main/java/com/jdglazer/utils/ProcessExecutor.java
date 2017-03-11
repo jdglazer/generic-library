@@ -8,11 +8,7 @@ import java.io.InputStream;
 public class ProcessExecutor {
 	
 	public static final int ERROR_EXECUTING = 123456;
-	
-	private File scriptPath;
-	
-	private String arguments;
-	
+		
 	private InputStream inputStream;
 	
 	private ProcessBuilder pb;
@@ -21,9 +17,9 @@ public class ProcessExecutor {
 		pb = new ProcessBuilder();
 	}
 	
-	public int execute() {
+	public int execute( String... command ) {
 		inputStream = null;
-		pb.command(scriptPath.getAbsolutePath().trim()+" "+arguments.trim() );
+		pb.command(command);
 				
 		try {
 			Process p = pb.start();
@@ -38,36 +34,17 @@ public class ProcessExecutor {
 		return ERROR_EXECUTING;
 	}
 	
-	public int execute( File file ) {
+	public int execute( File file, String... command) {
 		if( !file.isFile() ) {
 			try {
 				file.createNewFile();
 			} catch (IOException e) {}
 		}
 		pb.redirectOutput( file );
-		return execute();
-	}
-	
-	public ProcessExecutor setScriptPath( String scriptPath ) {
-		this.scriptPath = new File( scriptPath );
-		return this;
-	}
-	
-	public File getScriptPath() {
-		return scriptPath;
-	}
-	
-	public ProcessExecutor setArguments( String arguments ) {
-		this.arguments = arguments;
-		return this;
-	}
-	
-	public String getArguments() {
-		return arguments;
+		return execute(command);
 	}
 
 	public InputStream getInputStream() {
 		return inputStream;
 	}
-
 }

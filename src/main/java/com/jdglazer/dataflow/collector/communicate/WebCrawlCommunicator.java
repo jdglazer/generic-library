@@ -1,6 +1,5 @@
-package com.jdglazer.dataflow.collector;
+package com.jdglazer.dataflow.collector.communicate;
 
-import com.jdglazer.dataflow.collector.DataSourceParserBase;
 import com.jdglazer.web.crawler.WebCollectorConfig;
 import com.jdglazer.web.crawler.WebCollectorFactory;
 
@@ -16,13 +15,13 @@ import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
  * @author Glazer, Joshua D.
  *
  */
-public class WebCrawl implements DataSourceParserBase {
+public class WebCrawlCommunicator implements CommunicatorBase {
 	
 	private WebCollectorConfig config;
 	private WebCollectorFactory factory;
 	private CrawlController controller;
 	
-	public WebCrawl( WebCollectorConfig config ) throws Exception {
+	public WebCrawlCommunicator( WebCollectorConfig config ) throws Exception {
 		this.config = config;
 		init();
 	}
