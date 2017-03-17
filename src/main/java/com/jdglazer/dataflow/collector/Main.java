@@ -49,13 +49,15 @@ public class Main {
 					dataSourceThreadManager.cleanSourcesToRemove();
 					Map<String, Object> changedSources = DataSourceDefinitionManager.updateEdittedDataSources();
 					for( Entry<String, Object> entry : changedSources.entrySet() ) {
+						if( !(entry.getValue() instanceof DataSource) ) {
+							System.out.println("Removing an old data source");
+							dataSourceThreadManager.removeDataSourceBySha( entry.getKey() );
+						}
+					}
+					for( Entry<String, Object> entry : changedSources.entrySet() ) {
 						if( entry.getValue() instanceof DataSource ) {
 							System.out.println("Adding new data source");
 							dataSourceThreadManager.addDataSource( (DataSource) entry.getValue() );
-						}
-						else {
-							System.out.println("Removing an old data source");
-							dataSourceThreadManager.removeDataSourceBySha( entry.getKey() );
 						}
 					}
 				}

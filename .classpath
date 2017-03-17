@@ -34,6 +34,5 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/parser-library"/>
-	<classpathentry kind="lib" path="/home/jglazer/workspace/external-libs/jar/jsch-0.1.54.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
