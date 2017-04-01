@@ -17,4 +17,6 @@
 	</bean>
 	
 	<bean id="remote-data-collector.threadManager" class="com.jdglazer.dataflow.collector.DataSourceThreadManager"></bean>
+	
+	
 </beans>

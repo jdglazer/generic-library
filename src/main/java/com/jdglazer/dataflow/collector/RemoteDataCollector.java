@@ -34,7 +34,10 @@ public class RemoteDataCollector {
 	public void start() {
 		ApplicationContext context = new ClassPathXmlApplicationContext("com/jdglazer/dataflow/collector/config/remote-data-collector.xml");
 		//Register application shut down hook
-		Runtime.getRuntime().addShutdownHook( new RemoteDataCollector.DataCollectorShutdown() );
+		//need to look at springifying this 
+		DataCollectorShutdown shutdownThread = new RemoteDataCollector.DataCollectorShutdown();
+		shutdownThread.setRemoteDataCollector( this );
+		Runtime.getRuntime().addShutdownHook(  shutdownThread);
 		
 		while( running || !gracefullyStopped ) {
 			try {
@@ -86,8 +89,10 @@ public class RemoteDataCollector {
 			}
 		}
 	}
-	private static class DataCollectorShutdown extends Thread {
+	
+	public class DataCollectorShutdown extends Thread {
 		private RemoteDataCollector remoteDataCollector;
+		
 		@Override 
 		public void run() {
 			remoteDataCollector.stop();
